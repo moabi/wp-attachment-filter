@@ -60,8 +60,10 @@ class Wp_Attachment_Filter_Public {
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles() {
-
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wp-attachment-filter-public.css', array(), $this->version, 'all' );
+		global $post;
+		if( has_shortcode( $post->post_content, 'mediabycategory') ) {
+			wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/wp-attachment-filter-public.css', array(), $this->version, 'all');
+		}
 
 	}
 
@@ -72,8 +74,10 @@ class Wp_Attachment_Filter_Public {
 	 */
 	public function enqueue_scripts() {
 
-
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wp-attachment-filter-public.js', array( 'jquery' ), $this->version, false );
+		global $post;
+		if( has_shortcode( $post->post_content, 'mediabycategory') ) {
+			wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/wp-attachment-filter-public.js', array('jquery'), $this->version, false);
+		}
 
 	}
 
