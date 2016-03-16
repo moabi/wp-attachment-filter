@@ -83,10 +83,12 @@ class Wp_Attachment_Filter_Public {
 			wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/wp-attachment-filter-public.js', array('jquery'), $this->version, true);
 		}
 
-
-
 	}
 
+	/**
+	 * enqueue_mpf_scripts
+	 * will add the mpf library
+	 */
 	public  function enqueue_mpf_scripts(){
 			wp_enqueue_script($this->plugin_name.'mpfjs', plugin_dir_url(__FILE__) . 'js/dimsemenov.js', array('jquery',$this->plugin_name), $this->version, true);
 	}
