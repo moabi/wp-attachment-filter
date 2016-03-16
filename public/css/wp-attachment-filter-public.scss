@@ -35,8 +35,7 @@ span.attac-name{text-align:left;display:block;background-color:#fff;line-height:
 .attachment_display a.download-link img{position:absolute;left:18px;top:9px;padding:0;margin:0}
 .attachment_display .fa{padding:15px 10px 0 0;position:absolute;top:-10px;right:15px;max-width:15px;height:auto}
 .attachment_display li::before{content:""}
-.eml-filter-block{  margin: auto;float: none;display: block;padding: 0 1em;border-top: 1px solid #BBB;
-  border-bottom: 1px solid #BBB;position: relative;}
+.eml-filter-block{  margin: auto;float: none;display: block;padding: 0 1em 1em;border: 1px solid #BBB;  position: relative;}
 .eml-filter-block h2{    font-size: 18px;
   font-weight: 300;
   color: #6E6E6E;

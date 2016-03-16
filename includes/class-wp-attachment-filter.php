@@ -160,6 +160,7 @@ class Wp_Attachment_Filter {
 			// Add a callback to add our button to the TinyMCE toolbar
 			$this->loader->add_filter('mce_buttons',$plugin_admin, 'mediabycategory_add_tinymce_button');
 		//}
+		$this->loader->add_action( 'admin_menu', $plugin_admin, 'wp_admin_menu' );
 
 
 	}

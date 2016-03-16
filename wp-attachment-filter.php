@@ -30,6 +30,16 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
+function get_wp_attachment_filter_plugin_dir(){
+	$url_plugins =  plugin_dir_path( __FILE__ );
+	return $url_plugins;
+}
+
+function get_wp_attachment_filter_plugin_uri(){
+	$url_plugins = plugin_dir_url(__FILE__);
+	return $url_plugins;
+}
+
 /**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-wp-attachment-filter-activator.php

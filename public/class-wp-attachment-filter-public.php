@@ -269,9 +269,16 @@ class Wp_Attachment_Filter_Public {
 		$post_tax = (isset($_POST['value'])) ? $_POST['value'] : '';
 
 		$wp_query = $this->eml_default_query($post_tax);
-
 		$mime = $this->get_mime_type_by_tax($wp_query);
-		$acf = $this->get_acf_media_by_tax($wp_query,'utilisation','Use');
+
+		//$acf = $this->get_acf_media_by_tax($wp_query,'utilisation','Use');
+		$acf = array();
+		$acf_wpaf_items_option = get_option('wpaf-acf-items');
+		foreach($acf_wpaf_items_option as $acf_wpaf_item){
+			$acf_data = $this->get_acf_media_by_tax($wp_query,$acf_wpaf_item,$acf_wpaf_item);
+			array_push($acf,$acf_data);
+		}
+
 		$data = array(
 			'mime' => $mime,
 			'acf'   => $acf,
@@ -339,7 +346,7 @@ class Wp_Attachment_Filter_Public {
 	public function get_attachment_custom($post_id = false){
 		$values = array();
 		if($post_id == false){
-			$attachmentQuery = eml_default_query(false);
+			$attachmentQuery = $this->eml_default_query(false);
 			while ($attachmentQuery->have_posts()) {
 				$attachmentQuery->the_post();
 				$attachmentID = get_the_ID();
@@ -390,7 +397,7 @@ class Wp_Attachment_Filter_Public {
 			$output .= '';
 		}
 		$uniq_terms = array_unique($values);
-		$output .= '<div class="col-md-2 eml-acf-field">';
+		$output .= '<div id="eml-acf-'.$field_name.'" class="col-md-2 eml-acf-field">';
 		$output .= '<div class="row"><ul class="dropdown">';
 		$output .= '<li><a href="#"><i class="fa fa-chevron-down"></i> '.$field_name.'</a><ul class="submenu">';
 		if(!empty($uniq_terms)){
@@ -399,7 +406,7 @@ class Wp_Attachment_Filter_Public {
 			foreach($uniq_terms as $uniq_term){
 				if(!empty($uniq_term)){
 					$i++;
-					$output .= $uniq_term != "" ? '<li><input class="eml-js-filter" name="eml-use" type="checkbox" value="'.$uniq_term.'" id="'.$uniq_term.'" /><label for="'.$uniq_term.'"> '.$uniq_term.'</label></li>': '';
+					$output .= $uniq_term != "" ? '<li><input class="eml-js-filter" name="eml-'.$acf_field.'" type="checkbox" value="'.$uniq_term.'" id="'.$uniq_term.'" /><label for="'.$uniq_term.'"> '.$uniq_term.'</label></li>': '';
 				}
 			}
 			$output .= ($i == 0) ? 'No choice in this category': '';
@@ -431,7 +438,12 @@ class Wp_Attachment_Filter_Public {
 		$output .= $this->get_mime_type_by_tax($eml_default_query);
 
 		//USE - custom fields
-		$output .= $this->get_acf_media_by_tax($eml_default_query,'utilisation','Use');
+		//$output .= $this->get_acf_media_by_tax($eml_default_query,'utilisation','Use');
+
+		$acf_wpaf_items_option = get_option('wpaf-acf-items');
+		foreach($acf_wpaf_items_option as $acf_wpaf_item){
+			$output .= $this->get_acf_media_by_tax($eml_default_query,$acf_wpaf_item,$acf_wpaf_item);
+		}
 
 		// ORDER BY
 		$output .= '<ul class="col-md-1">';
@@ -458,7 +470,7 @@ class Wp_Attachment_Filter_Public {
 		$output .= '</li>';
 		$output .= '<li><input class="eml-js-filter eml-js-term" type="text" name="eml-s" value="" placeholder="Search terms" />';
 		$output .= '</ul>';
-		$output .= '<div class="col-md-2">';
+		$output .= '<div class="col-md-12">';
 		$output .= '<input class="btn btn-submit" type="submit" name="eml-submit" value="Search" />';
 		$output .= '</div>';
 
@@ -492,7 +504,17 @@ class Wp_Attachment_Filter_Public {
 	 */
 	public function  iOEheoau_ajax_filter_eml_media_query(){
 
+
 		$post_values = (isset($_POST['values'])) ? $_POST['values'] : '';
+		$custom_fields_array = array();
+		$acf_wpaf_items_option = get_option('wpaf-acf-items');
+		foreach($acf_wpaf_items_option as $acf_wpaf_item){
+			$html_name = 'eml-'.$acf_wpaf_item;
+			array_push($custom_fields_array,$html_name);
+		}
+		//var_dump($acf);
+		//filter values
+		$acf_sel = array();
 		if(!empty($post_values) && is_array($post_values)){
 			$eml_mime = array();
 			foreach($post_values as $post_value){
@@ -506,14 +528,14 @@ class Wp_Attachment_Filter_Public {
 					case 'eml-mime':
 						array_push( $eml_mime, $post_value['value'] ) ;
 						break;
-					case 'eml-use':
-						$eml_use = $post_value['value'];
-						break;
 					case 'eml-s':
 						$eml_s = $post_value['value'];
 						break;
 					case 'eml-media-tax':
 						$eml_media_tax = $post_value['value'];
+						break;
+					case (in_array($post_value['name'],$custom_fields_array)):
+						array_push($acf_sel,$post_value['value']);
 						break;
 				}
 			}
@@ -523,8 +545,9 @@ class Wp_Attachment_Filter_Public {
 		$orderby = (isset($eml_orderby)) ? $eml_orderby : "date";
 		$mime = (isset($eml_mime)) ? $eml_mime : get_post_mime_type();
 		$s = (isset($eml_s)) ? $eml_s : '';
-		$use = (isset($eml_use)) ? $eml_use : '';
 
+		$use = (!empty($acf_sel)) ? $acf_sel : '';
+		//var_dump($acf_sel);
 		//taxonomy filtering
 		if(!empty($post_tax)){
 			$default_term_filtering = array(
@@ -779,44 +802,50 @@ class Wp_Attachment_Filter_Public {
 	 * @param bool $default_term
 	 */
 	public function retrieve_media_tax($is_ajax = true,$default_term = false){
-		$taxonomies = array(
-			'media_category',
-		);
-		$args = array(
-			'orderby'           => 'name',
-			'order'             => 'ASC',
-			'hide_empty'        => true,
-			'exclude'           => array(),
-			'exclude_tree'      => array(),
-			'include'           => array(),
-			'number'            => '',
-			'fields'            => 'all',
-			'slug'              => '',
-			'parent'            => '',
-			'hierarchical'      => true,
-			'child_of'          => 0,
-			'childless'         => false,
-			'get'               => '',
-			'name__like'        => '',
-			'description__like' => '',
-			'pad_counts'        => false,
-			'offset'            => '',
-			'search'            => '',
-			'cache_domain'      => 'core'
-		);
-		$terms = get_terms($taxonomies, $args);
-		$output = '';
-		//var_dump($terms);
-		foreach($terms as $term){
-			$selected = ($default_term != false && $default_term == $term->slug) ? 'selected' : '';
-			$output .= '<option '.$selected.' value="'.$term->slug.'">'.$term->name.'</option>';
-		}
-		if($is_ajax == true || $_POST['is_ajax'] == true){
-			echo $output;
-			die();
+		$get_media_tax = get_option('wpaf-media-tax');
+		if(!empty($get_media_tax)){
+			$taxonomies = array(
+				$get_media_tax,
+			);
+			$args = array(
+				'orderby'           => 'name',
+				'order'             => 'ASC',
+				'hide_empty'        => true,
+				'exclude'           => array(),
+				'exclude_tree'      => array(),
+				'include'           => array(),
+				'number'            => '',
+				'fields'            => 'all',
+				'slug'              => '',
+				'parent'            => '',
+				'hierarchical'      => true,
+				'child_of'          => 0,
+				'childless'         => false,
+				'get'               => '',
+				'name__like'        => '',
+				'description__like' => '',
+				'pad_counts'        => false,
+				'offset'            => '',
+				'search'            => '',
+				'cache_domain'      => 'core'
+			);
+			$terms = get_terms($taxonomies, $args);
+			$output = '';
+			//var_dump($terms);
+			foreach($terms as $term){
+				$selected = ($default_term != false && $default_term == $term->slug) ? 'selected' : '';
+				$output .= '<option '.$selected.' value="'.$term->slug.'">'.$term->name.'</option>';
+			}
+			if($is_ajax == true || $_POST['is_ajax'] == true){
+				echo $output;
+				die();
+			} else {
+				return $output;
+			}
 		} else {
-			return $output;
+			return false;
 		}
+
 	}
 
 }

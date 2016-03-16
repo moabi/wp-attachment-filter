@@ -78,23 +78,6 @@ class Wp_Attachment_Filter_Admin {
 
 	}
 
-	/*
- * Add custom shortcode to retrieve medias by category
- * */
-
-	/*
-     * shortcode for custom buttons
-     */
-// init process for registering our button
-	public function mediabycategory_shortcode_button_init() {
-
-		//Add a callback to regiser our tinymce plugin
-		add_filter("mce_external_plugins", "mediabycategory_register_tinymce_plugin");
-
-		// Add a callback to add our button to the TinyMCE toolbar
-		add_filter('mce_buttons', 'mediabycategory_add_tinymce_button');
-	}
-
 
 
 	/**
@@ -105,7 +88,7 @@ class Wp_Attachment_Filter_Admin {
 	 * @return mixed
 	 */
 	public function  mediabycategory_register_tinymce_plugin($plugin_array) {
-		$plugin_array['mediabycategory_button'] = get_stylesheet_directory_uri() .'/js/admin/mediabycategory.js';
+		$plugin_array['mediabycategory_button'] = get_wp_attachment_filter_plugin_uri() .'/admin/js/wp-attachment-filter-admin.js';
 		return $plugin_array;
 	}
 
@@ -120,6 +103,33 @@ class Wp_Attachment_Filter_Admin {
 		//Add the button ID to the $button array
 		$buttons[] = "mediabycategory_button";
 		return $buttons;
+	}
+
+	/**
+	 * Add menu pages in wp admin
+	 */
+	public function wp_admin_menu(){
+		//add settings page
+		add_submenu_page( 'plugins.php','Attachment filter', 'Attachment filter', 'publish_pages', 'wp-attachment-filter', array( $this, 'helper' ) );
+		//register settings
+		add_action( 'admin_init', array($this, 'register_plugins_settings') );
+	}
+
+	/**
+	 * admin wiews
+	 */
+	public function helper(){
+		$admin_view = plugin_dir_path( __FILE__ ) . 'partials/wp-attachment-filter-admin-display.php';
+		include_once $admin_view;
+	}
+
+	/**
+	 * Register settings
+	 */
+	public function register_plugins_settings() {
+		//register our settings
+		register_setting( 'wp-attachment-filter-settings-group', 'wpaf-media-tax' );
+		register_setting( 'wp-attachment-filter-settings-group', 'wpaf-acf-items' );
 	}
 
 }
