@@ -7,13 +7,20 @@ Tested up to: 4.4.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Provide an attachment filter for wordpress
-make use of EML plugin categories : http://www.wpuxsolutions.com/
+Provide an attachment filter box for wordpress in the front end
+Easy to use with EML plugin categories : http://www.wpuxsolutions.com/
 
 == Description ==
 
-Provide an attachment filter for wordpress
-shortcodes to display media by tax
+- Provide an attachment filter for wordpress in the front end area
+- filter by taxonomy, custom fields,asc/desc, name/title, text, mime type
+- shortcodes to display attachments by taxonomy
+
+Back-office :
+
+- select the custom fields you want to filter
+- change you attachment taxonomy to your needs
+
 
 == Installation ==
 
