@@ -57,6 +57,23 @@
                     </em>
                 </td>
             </tr>
+
+            <tr valign="top">
+                <th scope="row">
+                    Include the excellent <a target="_blank" href="https://github.com/dimsemenov/Magnific-Popup/">Magnific-Popup</a> by Dimsemenov ?
+                </th>
+                <td>
+                    <?php
+                    $wp_payzen_css = get_option('wp-attachment-filter-mpf');
+                    if($wp_payzen_css == 'on') {
+                        $checked_dim = 'checked';
+                    } else {
+                        $checked_dim = '';
+                    }
+                    ?>
+                    <input <?php echo $checked_dim; ?> type="checkbox" name="wp-attachment-filter-mpf" id="wp-attachment-filter-mpf" />
+                </td>
+            </tr>
         </table>
 
         <?php submit_button(); ?>
@@ -75,7 +92,12 @@
     Taxonomy display attachment with filter : <pre>[mediabycategory tax="YOURTAXONOMYTERM" filter="true" ]</pre>
     </p>
     <p>
-        wp attachment filter use...<a href="http://getbootstrap.com/" target="_blank">Bootstrap.</a>
+        wp attachment filter use...:
+        <ul>
+        <li><a href="http://getbootstrap.com/" target="_blank">Bootstrap.</a></li>
+        <li><a href="https://jquery.com/" target="_blank">jQuery.</a></li>
+    </ul>
+
     </p>
 
 

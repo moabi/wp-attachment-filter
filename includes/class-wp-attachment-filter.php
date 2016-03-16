@@ -193,6 +193,12 @@ class Wp_Attachment_Filter {
 		//ajx admin
 		$this->loader->add_action( 'wp_ajax_retrieve_media_tax',$plugin_public, 'retrieve_media_tax' );
 		$this->loader->add_action( 'wp_ajax_nopriv_retrieve_media_tax',$plugin_public, 'retrieve_media_tax' );
+		//enqueue mpf
+		$wp_mpf_src = get_option('wp-attachment-filter-mpf');
+		if($wp_mpf_src == 'on') {
+			$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_mpf_styles' );
+			$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_mpf_scripts' );
+		}
 
 	}
 

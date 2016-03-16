@@ -64,6 +64,10 @@ class Wp_Attachment_Filter_Public {
 		if( has_shortcode( $post->post_content, 'mediabycategory') ) {
 			wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/wp-attachment-filter-public.css', array(), $this->version, 'all');
 		}
+		$wp_payzen_css = get_option('wp-attachment-filter-mpf');
+		if($wp_payzen_css == 'on') {
+			wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/dimsemenov.css', array(), $this->version, 'all');
+		}
 
 	}
 
@@ -76,9 +80,18 @@ class Wp_Attachment_Filter_Public {
 
 		global $post;
 		if( has_shortcode( $post->post_content, 'mediabycategory') ) {
-			wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/wp-attachment-filter-public.js', array('jquery'), $this->version, false);
+			wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/wp-attachment-filter-public.js', array('jquery'), $this->version, true);
 		}
 
+
+
+	}
+
+	public  function enqueue_mpf_scripts(){
+			wp_enqueue_script($this->plugin_name.'mpfjs', plugin_dir_url(__FILE__) . 'js/dimsemenov.js', array('jquery',$this->plugin_name), $this->version, true);
+	}
+	public function enqueue_mpf_styles() {
+			wp_enqueue_style($this->plugin_name.'mpfcss', plugin_dir_url(__FILE__) . 'css/dimsemenov.css', array(), $this->version, 'all');
 	}
 
 	/**
