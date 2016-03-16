@@ -435,7 +435,7 @@ class Wp_Attachment_Filter_Public {
 
 		$eml_default_query = $this->eml_default_query($default_term);
 
-		$output = '<div id="'.$uuid.'" class="row eml-filter-block" data-default-term="'.$default_term.'">';
+		$output = '<div class="row " data-default-term="'.$default_term.'"><div id="'.$uuid.'" class="col-md-12 eml-filter-block"><div class="padd-1">';
 		$output .= '<h2><i class="fa fa-filter"></i>Filter <i class="fa fa-refresh fa-spin js-spin-it" style="display: none;"></i></h2>';
 
 		//MIME TYPE
@@ -449,18 +449,6 @@ class Wp_Attachment_Filter_Public {
 			$output .= $this->get_acf_media_by_tax($eml_default_query,$acf_wpaf_item,$acf_wpaf_item);
 		}
 
-		// ORDER BY
-		$output .= '<ul class="col-md-1">';
-		$output .= '<li><input id="eml-name" class="eml-js-filter"  type="radio" name="eml-orderby" value="name" /><label for="eml-name"> Name </label></li>';
-		$output .= '<li><input id="eml-date" class="eml-js-filter" checked type="radio" name="eml-orderby" value="date" /> <label for="eml-date">Date </label></li>';
-		$output .= '</ul>';
-
-		// ASC/DES
-		$output .= '<ul class="col-md-1">';
-		$output .= '<li><input id="eml-asc" class="eml-js-filter" type="radio" name="eml-order" value="ASC" /><label for="eml-asc"> ASC</label> </li>';
-		$output .= '<li><input id="eml-desc" class="eml-js-filter" checked type="radio" name="eml-order" value="DESC" /><label for="eml-desc"> DESC</label> </li>';
-		$output .= '</ul>';
-
 
 
 		//Taxonomy terms
@@ -472,13 +460,38 @@ class Wp_Attachment_Filter_Public {
 		$output .= '<option '.$default_to_all.' value="">ALL</option>';
 		$output .= '</select>';
 		$output .= '</li>';
+		$output .= '</ul>';
+		//SEARCH TERMS
+		$output .= '<ul class="col-md-3">';
 		$output .= '<li><input class="eml-js-filter eml-js-term" type="text" name="eml-s" value="" placeholder="Search terms" />';
 		$output .= '</ul>';
-		$output .= '<div class="col-md-12">';
+
+		//LAST BLOCK
+		$output .= '<div class="row"><div class="col-md-12">';
+
+
+		// ORDER BY
+		$output .= '<div class="col-md-2 "><ul class="horizontal-list">';
+		$output .= '<li><input id="eml-name" class="eml-js-filter"  type="radio" name="eml-orderby" value="name" /><label for="eml-name"> Name </label></li>';
+		$output .= '<li><input id="eml-date" class="eml-js-filter" checked type="radio" name="eml-orderby" value="date" /> <label for="eml-date">Date </label></li>';
+		$output .= '</ul></div>';
+
+		// ASC/DES
+		$output .= '<div class="col-md-2 "> <ul class=" horizontal-list">';
+		$output .= '<li><input id="eml-asc" class="eml-js-filter" type="radio" name="eml-order" value="ASC" /><label for="eml-asc"> Asc</label> </li>';
+		$output .= '<li><input id="eml-desc" class="eml-js-filter" checked type="radio" name="eml-order" value="DESC" /><label for="eml-desc"> Desc</label> </li>';
+		$output .= '</ul></div>';
+
+		//submit button
+		$output .= '<div class="col-md-2 pull-right">';
 		$output .= '<input class="btn btn-submit" type="submit" name="eml-submit" value="Search" />';
 		$output .= '</div>';
 
-		$output .= '</div>';
+		$output .= '</div></div>';
+		//#LAST BLOCK
+
+
+		$output .= '</div></div></div>';
 
 		//RETURN ELEMENT
 		return $output;
@@ -622,8 +635,6 @@ class Wp_Attachment_Filter_Public {
 			}
 			$output .= '<div class="attachment_display row">';
 
-
-			$output .= '<div class="row">';
 			while ( $query_images->have_posts() ) {
 				$query_images->the_post();
 				$attachmentID = get_the_ID();
@@ -641,7 +652,7 @@ class Wp_Attachment_Filter_Public {
 					case 'image/jpeg':
 					case 'image/png':
 					case 'image/gif':
-						$img = '<a class="mfp-img" href="'.wp_get_attachment_url( $attachmentID ).'">';
+						$img = '<a title="'.get_the_title($attachmentID).'" class="mfp-img" href="'.wp_get_attachment_url( $attachmentID ).'">';
 						$img_attr = 'data-mfp-src="'.wp_get_attachment_url( $attachmentID ).'"';
 						$img .= wp_get_attachment_image( $attachmentID, 'eml-preview', false,$img_attr );
 						//$img .= '<img alt="'.get_the_title($attachmentID).'" src="'.wp_get_attachment_url( $attachmentID ).'" />';
@@ -692,7 +703,7 @@ class Wp_Attachment_Filter_Public {
 
 				$output .=  '</div></div>';
 			}
-			$output .= '</div></div>';
+			$output .= '</div>';
 		} else {
 			// no attachments found
 			$output = "<span class='eml-no-result'>no attachment found</span>";
