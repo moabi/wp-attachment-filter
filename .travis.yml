@@ -8,6 +8,6 @@ env:
 - WP_TRAVISCI=travis:phpunit WP_VERSION=latest
 
 script:
-- phpunit wp-payzen-faq.php
+- phpunit wp-attachment-filter.php
 - phpunit admin/
 - phpunit public/
