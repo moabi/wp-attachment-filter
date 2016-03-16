@@ -11,3 +11,4 @@ script:
 - phpunit wp-attachment-filter.php
 - phpunit admin/
 - phpunit public/
+- phpunit includes/

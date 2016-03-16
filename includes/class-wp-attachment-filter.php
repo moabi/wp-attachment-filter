@@ -179,8 +179,8 @@ class Wp_Attachment_Filter {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 		//filter
-		$this->loader->add_action( 'init' ,$plugin_public, 'add_tags_to_attachments' );
-		$this->loader->add_action( 'init',$plugin_public, 'attachments_tags', 0 );
+		//$this->loader->add_action( 'init' ,$plugin_public, 'add_tags_to_attachments' );
+		//$this->loader->add_action( 'init',$plugin_public, 'attachments_tags', 0 );
 		$this->loader->add_filter('upload_mimes',$plugin_public,'add_custom_mime_types');
 		//ajax
 		$this->loader->add_action( 'wp_ajax_refresh_eml_filters',$plugin_public, 'iOEheoau_ajax_refresh_eml_filters' );
