@@ -36,7 +36,7 @@
                     $acf_wpaf_items = $wpafp->get_attachment_custom();
 
                     echo '<ul>';
-                    foreach($acf_wpaf_items[0] as $key => $acf_wpaf_item){
+                    foreach($acf_wpaf_items as $key => $acf_wpaf_item){
                         if(is_array($acf_wpaf_items_option)){
                             $checked_acf = (in_array($key,$acf_wpaf_items_option)) ? 'checked="checked"': '';
                         } else {
@@ -53,7 +53,8 @@
                 <td>
                     <em>
                         Pick the custom fields you want to show on the filter box <br>
-                        <b>Caution :</b> may not work properly for all kind custom fields
+                        <b>Caution :</b> may not work properly for all kind custom fields <br>
+                        Fields which are not used -> WON'T appear
                     </em>
                 </td>
             </tr>

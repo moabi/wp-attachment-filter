@@ -16,14 +16,14 @@ span.attac-name{text-align:left;display:block;background-color:#fff;line-height:
   margin: 0 .5em 0 0;
   text-transform: lowercase;
   font-size: 12px;}
-.attachment_display a.download-link{padding: 0;
-  width: 80%;
+.attachment_display a.download-link,.attachment_display a.edit-link{padding: 0;
+  width: auto;
   line-height: 28px;
   display: block;
   border-radius: 4px;
-  margin: 12px auto;
+  margin: 12px auto 0;
   text-align: right;
-  font-size: 12px;
+  font-size: 11px;
   text-transform: uppercase;
   position: absolute;
   color: #3780D6;
@@ -31,6 +31,7 @@ span.attac-name{text-align:left;display:block;background-color:#fff;line-height:
   background: none;
   bottom: 0;
   right: 1em;}
+.attachment_display a.edit-link{right: inherit;left: 1em;}
 .attachment_display a.download-link:hover{background-color: inherit;}
 .attachment_display a.download-link img{position:absolute;left:18px;top:9px;padding:0;margin:0}
 .attachment_display .fa{padding:15px 10px 0 0;position:absolute;top:-10px;right:15px;max-width:15px;height:auto}

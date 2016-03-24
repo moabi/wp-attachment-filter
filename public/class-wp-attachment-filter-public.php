@@ -376,13 +376,20 @@ class Wp_Attachment_Filter_Public {
 			$custom_fields = get_post_custom($post_id);
 			array_push($values, $custom_fields );
 		}
-		$uniq_terms = array_unique($values);
-		foreach($uniq_terms[0] as $key => $uniq_term){
+		//var_dump($values[0]);
+
+		$uniq_terms = $values[0];
+		//get rid of _ values
+		foreach($uniq_terms as $key => $uniq_term){
 			if(substr($key,0,1) == '_'){
-				unset($uniq_terms[0][$key]);
+				unset($uniq_terms[$key]);
 			}
 		}
+
+		//var_dump($uniq_terms);
+
 		return $uniq_terms;
+
 
 	}
 
@@ -441,7 +448,8 @@ class Wp_Attachment_Filter_Public {
 
 	/**
 	 * eml_media_filters
-	 * display a block filter
+	 * display a block filter with all filtering options
+	 *
 	 * @param $default_term string taxonomy slug
 	 * @param $uuid string
 	 * @return string
@@ -463,7 +471,6 @@ class Wp_Attachment_Filter_Public {
 		foreach($acf_wpaf_items_option as $acf_wpaf_item){
 			$output .= $this->get_acf_media_by_tax($eml_default_query,$acf_wpaf_item,$acf_wpaf_item);
 		}
-
 
 
 		//Taxonomy terms
@@ -711,6 +718,9 @@ class Wp_Attachment_Filter_Public {
 
 				$output .= "</div>";
 				//$output .= '<a class="page-linker" href="'.$attachment_page.'">'. __('Full detailled page','assets').'</a>';
+				if(current_user_can('edit_posts')){
+					$output .= '<a class="edit-link" target="_blank" href="'.get_edit_post_link().'">Edit</a>';
+				}
 				$output .=  '<a  target="_blank" class="download-link btn" download="" href="'.wp_get_attachment_url( $attachmentID ).'" class="forcetodownload btn">'.__('download','assets').'</a>';
 
 
@@ -802,8 +812,8 @@ class Wp_Attachment_Filter_Public {
 	public function  mediabycategory_shortcode( $atts ) {
 		// Attributes
 		extract(shortcode_atts(array(
-			'tax' => 1,
-			'filter' => false
+			'tax' => 1,//media taxonomy
+			'filter' => false // wether to display a filter box
 		), $atts));
 
 		if (!empty($tax)):
@@ -866,7 +876,7 @@ class Wp_Attachment_Filter_Public {
 				$selected = ($default_term != false && $default_term == $term->slug) ? 'selected' : '';
 				$output .= '<option '.$selected.' value="'.$term->slug.'">'.$term->name.'</option>';
 			}
-			if($is_ajax == true || $_POST['is_ajax'] == true){
+			if($is_ajax == true || (isset($_POST['is_ajax']) && $_POST['is_ajax'] == true)){
 				echo $output;
 				die();
 			} else {
