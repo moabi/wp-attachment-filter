@@ -1,12 +1,13 @@
 
 
-var mediaCatBtn = '<div style="display:none !important;"> <form id="btn-ear-medias"><div id="lyra-mbc"> <p><select name="cs-link" id="cs-link"><option value="--">Pick a media taxonomy</option><option value="general">General Search Box</option></select> </p><p><input type="submit" id="closeCustomBtn-2" value="Insert Shortcode button" class="button button-primary button-large"></p></div></form></div>';
+var mediaCatBtn = '<div style="display:none !important;"> <form id="btn-ear-medias"><br /><br /><div id="lyra-mbc"> <p><input type="submit" id="closeCustomBtn-2" value="Insert Shortcode button" class="button button-primary button-large"></p></div></form></div>';
 
 jQuery(document).ready(function(jQuery) {
 	var $ = jQuery;
 	if(typeof tinymce != 'undefined'){
 
 
+		console.log(i);
 	jQuery.post(
 		ajaxurl,
 		{
@@ -14,11 +15,12 @@ jQuery(document).ready(function(jQuery) {
 			'is_ajax': true
 		},
 		function(response){
-			if(jQuery('#btn-ear-medias').length === 0 ){
-				jQuery('body').append(mediaCatBtn);
+			if(jQuery('#btn-ear-medias').length === 0  ){
+				jQuery('body').prepend(mediaCatBtn);
+
 			}
-			//console.log(mediaCatBtn);
-			$(response).appendTo('#cs-link');
+			console.log(response);
+			$('#lyra-mbc').prepend(response);
 		}
 	);
 	tinymce.create('tinymce.plugins.mediabycategory_plugin', {

@@ -339,7 +339,7 @@ class Wp_Attachment_Filter_Public {
 		$uniq_terms = array_unique($values);
 		$output .= '<div class="col-md-2 eml-mime-type">';
 		$output .= '<div class="row"><ul class="dropdown">';
-		$output .= '<li><a href="#"><i class="fa fa-chevron-down"></i> Extensions</a><ul class="submenu">';
+		$output .= '<li><a href="#"><i class="fa fa-chevron-down"></i> Type de document</a><ul class="submenu">';
 		if(!empty($uniq_terms)){
 
 			foreach($uniq_terms as $uniq_term){
@@ -830,10 +830,6 @@ class Wp_Attachment_Filter_Public {
 	}
 
 
-
-
-
-
 	/**
 	 * retrieve_media_tax
 	 * retrieve media taxonomy to create mediabycategory_shortcode
@@ -844,6 +840,35 @@ class Wp_Attachment_Filter_Public {
 	public function retrieve_media_tax($is_ajax = true,$default_term = false){
 		$get_media_tax = get_option('wpaf-media-tax');
 		if(!empty($get_media_tax)){
+			$output = '';
+
+			$args = array(
+				'show_option_all'    => '',
+				'show_option_none'   => '',
+				'option_none_value'  => '-1',
+				'orderby'            => 'ID',
+				'order'              => 'ASC',
+				'show_count'         => 1,
+				'hide_empty'         => 1,
+				'child_of'           => 0,
+				'exclude'            => '',
+				'echo'               => 0,
+				'selected'           => 0,
+				'hierarchical'       => 1,
+				'name'               => 'cs-link',
+				'id'                 => 'cs-link',
+				'class'              => 'cs-link',
+				'depth'              => 0,
+				'tab_index'          => 0,
+				'taxonomy'           => $get_media_tax,
+				'hide_if_empty'      => true,
+				'value_field'	     => 'slug',
+			);
+			$output .= wp_dropdown_categories( $args );
+
+			/*
+			 * <select name="cs-link" id="cs-link"><option value="--">Pick a media taxonomy</option><option value="general">General Search Box</option></select>
+			 *
 			$taxonomies = array(
 				$get_media_tax,
 			);
@@ -870,12 +895,15 @@ class Wp_Attachment_Filter_Public {
 				'cache_domain'      => 'core'
 			);
 			$terms = get_terms($taxonomies, $args);
-			$output = '';
+
+
 			//var_dump($terms);
 			foreach($terms as $term){
+				$hasParent = ($term->parent != false)? '-- ':'';
 				$selected = ($default_term != false && $default_term == $term->slug) ? 'selected' : '';
-				$output .= '<option '.$selected.' value="'.$term->slug.'">'.$term->name.'</option>';
+				//$output .= '<option '.$selected.' value="'.$term->slug.'">'.$hasParent.$term->name.'</option>';
 			}
+			*/
 			if($is_ajax == true || (isset($_POST['is_ajax']) && $_POST['is_ajax'] == true)){
 				echo $output;
 				die();
