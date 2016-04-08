@@ -477,10 +477,10 @@ class Wp_Attachment_Filter_Public {
 		$default_to_all = ($default_term == 1) ? 'selected': '';
 		$output .= '<ul class="col-md-3">';
 		$output .= '<li>';
-		$output .= '<select name="eml-media-tax" class="eml-js-term">';
+		//$output .= '<select name="eml-media-tax" class="eml-js-term">';
 		$output .= $this->retrieve_media_tax(false,$default_term);
-		$output .= '<option '.$default_to_all.' value="">ALL</option>';
-		$output .= '</select>';
+		//$output .= '<option '.$default_to_all.' value="">ALL</option>';
+		//$output .= '</select>';
 		$output .= '</li>';
 		$output .= '</ul>';
 		//SEARCH TERMS
@@ -570,7 +570,7 @@ class Wp_Attachment_Filter_Public {
 					case 'eml-s':
 						$eml_s = $post_value['value'];
 						break;
-					case 'eml-media-tax':
+					case 'cs-link':
 						$eml_media_tax = $post_value['value'];
 						break;
 					case (in_array($post_value['name'],$custom_fields_array)):

@@ -99,7 +99,7 @@ jQuery(function(){
 		e.preventDefault();
 		var container = $(this).parents('.eml-filter-block').attr('id'),
 			values = [];
-		$('.eml-js-filter:checked,.eml-js-term').each(function(){
+		$('.eml-js-filter:checked,.cs-link').each(function(){
 			var inputName = $(this).attr('name'),
 				inputValue  = $(this).val();
 			values.push(
