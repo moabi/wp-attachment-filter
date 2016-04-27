@@ -7,6 +7,7 @@
  * @param $ajaxurl string
  */
 function mediaFilter(container,values,$ajaxurl){
+	//console.log(values);
 	$resultContainer = $('#res-'+ container );
 	$resultContainerTax = $('#'+ container ).attr('data-default-term');
 
@@ -16,13 +17,17 @@ function mediaFilter(container,values,$ajaxurl){
 			'tax': $resultContainerTax
 		})
 		.done(function(data) {
+			//console.log(data);
 			//Load html results
 			$resultContainer.empty().append(data);
 			//build active filters for ux
 			activefilters = '<div class="active-filters">';
 			for (i = 0; i < values.length; i++) {
-				if(values[i].value !== ""){
-					activefilters += '<span>'+ values[i].value + "</span>";
+				$valFilter = values[i].value;
+				if($valFilter !== "" && $valFilter !== '0'){
+					activefilters += '<span>'+ values[i].value + '</span>';
+				} else if($valFilter === '0'){
+					activefilters += '<span>All</span>';
 				}
 
 				//console.log(values[i].value);
@@ -99,7 +104,7 @@ jQuery(function(){
 		e.preventDefault();
 		var container = $(this).parents('.eml-filter-block').attr('id'),
 			values = [];
-		$('.eml-js-filter:checked,.cs-link').each(function(){
+		$('.eml-js-filter:checked,.cs-link,.eml-js-term').each(function(){
 			var inputName = $(this).attr('name'),
 				inputValue  = $(this).val();
 			values.push(

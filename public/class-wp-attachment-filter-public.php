@@ -20,6 +20,8 @@
  * @subpackage Wp_Attachment_Filter/public
  * @author     LYRA NETWORK <david.fieffe@lyra-network.com>
  */
+
+
 class Wp_Attachment_Filter_Public {
 
 	/**
@@ -337,7 +339,7 @@ class Wp_Attachment_Filter_Public {
 
 		}
 		$uniq_terms = array_unique($values);
-		$output .= '<div class="col-md-2 eml-mime-type">';
+		$output .= '<div class="col-md-3 eml-mime-type">';
 		$output .= '<div class="row"><ul class="dropdown">';
 		$output .= '<li><a href="#"><i class="fa fa-chevron-down"></i> Type de document</a><ul class="submenu">';
 		if(!empty($uniq_terms)){
@@ -475,7 +477,7 @@ class Wp_Attachment_Filter_Public {
 
 		//Taxonomy terms
 		$default_to_all = ($default_term == 1) ? 'selected': '';
-		$output .= '<ul class="col-md-3">';
+		$output .= '<ul class="col-md-4">';
 		$output .= '<li>';
 		//$output .= '<select name="eml-media-tax" class="eml-js-term">';
 		$output .= $this->retrieve_media_tax(false,$default_term);
@@ -483,17 +485,14 @@ class Wp_Attachment_Filter_Public {
 		//$output .= '</select>';
 		$output .= '</li>';
 		$output .= '</ul>';
-		//SEARCH TERMS
-		$output .= '<ul class="col-md-3">';
-		$output .= '<li><input class="eml-js-filter eml-js-term" type="text" name="eml-s" value="" placeholder="Search terms" />';
-		$output .= '</ul>';
+
 
 		//LAST BLOCK
 		$output .= '<div class="row"><div class="col-md-12">';
 
 
 		// ORDER BY
-		$output .= '<div class="col-md-2 "><ul class="horizontal-list">';
+		$output .= '<div class="col-md-3 "><ul class="horizontal-list">';
 		$output .= '<li><input id="eml-name" class="eml-js-filter"  type="radio" name="eml-orderby" value="name" /><label for="eml-name"> Name </label></li>';
 		$output .= '<li><input id="eml-date" class="eml-js-filter" checked type="radio" name="eml-orderby" value="date" /> <label for="eml-date">Date </label></li>';
 		$output .= '</ul></div>';
@@ -504,6 +503,11 @@ class Wp_Attachment_Filter_Public {
 		$output .= '<li><input id="eml-desc" class="eml-js-filter" checked type="radio" name="eml-order" value="DESC" /><label for="eml-desc"> Desc</label> </li>';
 		$output .= '</ul></div>';
 
+		//SEARCH TERMS
+		$output .= '<ul class="col-md-3">';
+		$output .= '<li><input class="eml-js-filter eml-js-term" type="text" name="eml-s" value="" placeholder="Search terms" />';
+		$output .= '</ul>';
+		
 		//submit button
 		$output .= '<div class="col-md-2 pull-right">';
 		$output .= '<input class="btn btn-submit" type="submit" name="eml-submit" value="Search" />';
@@ -629,6 +633,7 @@ class Wp_Attachment_Filter_Public {
 	}
 
 
+
 	/**
 	 * get_default_query
 	 *
@@ -662,7 +667,8 @@ class Wp_Attachment_Filter_Public {
 				$attachmentID = get_the_ID();
 				$type = get_post_mime_type($attachmentID);
 				$attach = wp_get_attachment_metadata($attachmentID);
-				$filetype = wp_check_filetype(wp_get_attachment_url( $attachmentID ));
+				$attachment_url = wp_get_attachment_url( $attachmentID );
+				$filetype = wp_check_filetype($attachment_url);
 				$attachment_page = get_attachment_link($attachmentID);
 				$wording = get_field( "wording", $attachmentID );
 				$fotolia_id = get_field('fotolia');
@@ -680,6 +686,12 @@ class Wp_Attachment_Filter_Public {
 						//$img .= '<img alt="'.get_the_title($attachmentID).'" src="'.wp_get_attachment_url( $attachmentID ).'" />';
 						$img .= '</a>';
 						$img .= '<span class="attac-name">'.get_the_title($attachmentID).'</span>';
+						break;
+					case 'application/pdf':
+						$img = '';
+
+						$img .= '<span class="attac-name">'.get_the_title($attachmentID).'</span>';
+
 						break;
 					default:
 						$img = '<span class="attac-name">'.get_the_title($attachmentID).'</span>';
@@ -843,7 +855,7 @@ class Wp_Attachment_Filter_Public {
 			$output = '';
 
 			$args = array(
-				'show_option_all'    => '',
+				'show_option_all'    => __('All', 'wafp'),
 				'show_option_none'   => '',
 				'option_none_value'  => '-1',
 				'orderby'            => 'ID',
