@@ -42,6 +42,8 @@ class Wp_Attachment_Filter_Public {
 	 */
 	private $version;
 
+	public $NumberOfPosts = 20;
+
 	/**
 	 * Initialize the class and set its properties.
 	 *
@@ -244,7 +246,7 @@ class Wp_Attachment_Filter_Public {
 	public function eml_default_query($default_term){
 		wp_reset_postdata();
 		wp_reset_query();
-
+		$paged = ( get_query_var('paged') ) ? get_query_var('paged') : 1;
 		//get default query
 		if(isset($default_term) && !empty($default_term)){
 			$filter_item = array(
@@ -259,7 +261,8 @@ class Wp_Attachment_Filter_Public {
 			$query_args = array(
 				'post_type' => 'attachment',
 				'post_status' => 'inherit',
-				'posts_per_page' => -1,
+				'posts_per_page' => 30,
+				'paged' => $paged,
 				'tax_query' => $filter_item
 			);
 		} else {
@@ -267,12 +270,12 @@ class Wp_Attachment_Filter_Public {
 			$query_args = array(
 				'post_type' => 'attachment',
 				'post_status' => 'inherit',
-				'posts_per_page' => -1,
+				'posts_per_page' => 30,
+				'paged' => $paged
 			);
 		}
 
-
-
+		//general query
 		$eml_query = new WP_Query( $query_args );
 
 		return $eml_query;
@@ -364,9 +367,9 @@ class Wp_Attachment_Filter_Public {
 	 * @param $post_id integer - optional if you want to retrieve for a uniq attachment
 	 * @return array
 	 */
-	public function get_attachment_custom($post_id = false){
+	public function get_attachment_custom($post_id = 0){
 		$values = array();
-		if($post_id == false){
+		if($post_id == 0){
 			$attachmentQuery = $this->eml_default_query(false);
 			while ($attachmentQuery->have_posts()) {
 				$attachmentQuery->the_post();
@@ -549,6 +552,7 @@ class Wp_Attachment_Filter_Public {
 
 
 		$post_values = (isset($_POST['values'])) ? $_POST['values'] : '';
+		$post_offset = (isset($_POST['offset'])) ? $_POST['offset'] : 0;
 		$custom_fields_array = array();
 		$acf_wpaf_items_option = get_option('wpaf-acf-items');
 		foreach($acf_wpaf_items_option as $acf_wpaf_item){
@@ -614,7 +618,9 @@ class Wp_Attachment_Filter_Public {
 			'tax_query' => $default_term_filtering,
 			'post_mime_type' => $mime,
 			's' => $s,
-			'meta_value' => $use
+			'meta_value' => $use,
+			'posts_per_page' => $this->NumberOfPosts,
+			'offset' => $post_offset
 
 		);
 
@@ -644,12 +650,31 @@ class Wp_Attachment_Filter_Public {
 	 * @return bool|string
 	 */
 	public function get_default_query($query_args){
+		wp_reset_postdata();
+		wp_reset_query();
 		$query_images = new WP_Query( $query_args['args'] );
+		global $found_posts;
+		$total_found_posts = filter_var( absint( $query_images->found_posts ), FILTER_SANITIZE_NUMBER_INT );
+		$paged_num = intval($total_found_posts / $this->NumberOfPosts);
+//		echo '<pre>';
+//		var_dump( $query_args['args']);
+//		echo '</pre>';
 		$output = '';
 		if ( $query_images->have_posts() ) {
 			if($query_args['is_search'] == true){
 				$count = $query_images->post_count;
-				$output .= '<div class="row"><div class="col-md-12"><h2 class="eml-results"> Results ('.$count.'):</h2>';
+				$output .= '<div class="row"><div class="col-md-12"><h2 class="eml-results"> Results ('.$total_found_posts.'):';
+				if($total_found_posts > 20){
+					$output .= '<span class="nav-ajx custom-pagination">';
+					for ($x = 0; $x <= $paged_num; $x++) {
+						$offsetCount = $this->NumberOfPosts * $x;
+						$page = $x +1;
+						$output .= '<a href="javascript:void(0)" onclick="wpafOffsetQuery('.$offsetCount .')">'.$page .'</a>';
+					}
+					$output .= '</span>';
+				}
+
+				$output .= '</h2>';
 				//$output .= $query_args['args']['tax_query'][0]['terms'];
 				$output .= '<div class="em-filters-active"></div>';
 				$output .= '</div></div>';
@@ -740,6 +765,13 @@ class Wp_Attachment_Filter_Public {
 
 				$output .=  '</div></div>';
 			}
+			//pagination
+			if($query_args['is_search'] != true) {
+				$paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
+				$output .= $this->custom_pagination($query_images->max_num_pages, "", $paged);
+			}
+
+
 			$output .= '</div>';
 		} else {
 			// no attachments found
@@ -754,6 +786,7 @@ class Wp_Attachment_Filter_Public {
 			return $output;
 		}
 
+		return false;
 	}
 	/**
 	 * get_eml_medias
@@ -764,8 +797,10 @@ class Wp_Attachment_Filter_Public {
 	 * @return string
 	 */
 	public function get_eml_medias($args = array('filter' => false)){
+
 		//var_dump($args);
 		//taxonomy filtering - get a term from shortcode
+		$paged = ( get_query_var('paged') ) ? get_query_var('paged') : 1;
 		if(isset($args['default_term']) && $args['default_term'] != 1){
 			$default_term_filtering = array(
 				array(
@@ -779,7 +814,8 @@ class Wp_Attachment_Filter_Public {
 			$query_images_args = array(
 				'post_type' => 'attachment',
 				'post_status' => 'inherit',
-				'posts_per_page' => -1,
+				'posts_per_page' => 30,
+				'paged' => $paged,
 				'orderby' => 'date',
 				'order' => 'DESC',
 				'tax_query' => $default_term_filtering
@@ -790,7 +826,8 @@ class Wp_Attachment_Filter_Public {
 			$query_images_args = array(
 				'post_type' => 'attachment',
 				'post_status' => 'inherit',
-				'posts_per_page' => -1,
+				'posts_per_page' => 30,
+				'paged' => $paged,
 				'orderby' => 'date',
 				'order' => 'DESC'
 			);
@@ -807,12 +844,72 @@ class Wp_Attachment_Filter_Public {
 			'shortcode_terms' => $args['default_term']
 		);
 
+		wp_reset_postdata();
+		wp_reset_query();
 		return $this->get_default_query($query_args);
 
 	}
 
 
+	public function custom_pagination($numpages = '', $pagerange = '', $paged='') {
+		$output = '';
+		if (empty($pagerange)) {
+			$pagerange = 2;
+		}
 
+		/**
+		 * This first part of our function is a fallback
+		 * for custom pagination inside a regular loop that
+		 * uses the global $paged and global $wp_query variables.
+		 *
+		 * It's good because we can now override default pagination
+		 * in our theme, and use this function in default quries
+		 * and custom queries.
+		 */
+		global $paged;
+		if (empty($paged)) {
+			$paged = 1;
+		}
+		if ($numpages == '') {
+			global $wp_query;
+			$numpages = $wp_query->max_num_pages;
+			if(!$numpages) {
+				$numpages = 1;
+			}
+		}
+
+		/**
+		 * We construct the pagination arguments to enter into our paginate_links
+		 * function.
+		 */
+		$pagination_args = array(
+			'base'            => get_pagenum_link(1) . '%_%',
+			'format'          => 'page/%#%',
+			'total'           => $numpages,
+			'current'         => $paged,
+			'show_all'        => False,
+			'end_size'        => 1,
+			'mid_size'        => $pagerange,
+			'prev_next'       => True,
+			'prev_text'       => __('&laquo;'),
+			'next_text'       => __('&raquo;'),
+			'type'            => 'plain',
+			'add_args'        => false,
+			'add_fragment'    => ''
+		);
+
+		$paginate_links = paginate_links($pagination_args);
+
+		if ($paginate_links) {
+			$output .= "<nav class='custom-pagination col-md-12'>";
+			$output .= "<span class='page-numbers page-num'>Page " . $paged . " of " . $numpages . "</span> ";
+			$output .= $paginate_links;
+			$output .= "</nav>";
+		}
+
+		return $output;
+
+	}
 
 	/**
 	 * mediabycategory_shortcode

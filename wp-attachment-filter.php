@@ -16,7 +16,7 @@
  * Plugin Name:       wp Attachment filter
  * Plugin URI:        https://payzen.eu
  * Description:       Display medias by taxonomy, filter them
- * Version:           1.0.0
+ * Version:           1.1
  * Author:            LYRA NETWORK
  * Author URI:        https://www.lyra-network.com
  * License:           GPL-2.0+

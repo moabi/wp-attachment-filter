@@ -1,19 +1,22 @@
 
 /**
  * mediaFilter
+ * Main query for ajax medias request
  *
  * @param container string uniq ID
  * @param values
  * @param $ajaxurl string
+ * @param offset integer
  */
-function mediaFilter(container,values,$ajaxurl){
+function mediaFilter(container,values,$ajaxurl,offset){
 	//console.log(values);
 	$resultContainer = $('#res-'+ container );
 	$resultContainerTax = $('#'+ container ).attr('data-default-term');
-
+	offsetCount = (offset) ? offset : 0;
 	var jqxhr = $.post( $ajaxurl,{
 			'action': 'filter_eml_media_query',
 			'values':   values,
+			'offset': offsetCount,
 			'tax': $resultContainerTax
 		})
 		.done(function(data) {
@@ -46,10 +49,22 @@ function mediaFilter(container,values,$ajaxurl){
 		})
 		.always(function() {
 			$resultContainer.addClass('active');
+			$('input[name="eml-submit"]').removeClass('processing');
 		});
 
 }
 
+/**
+ *
+ * @param offsetPage
+ */
+function wpafOffsetQuery(offsetPage){
+
+	//console.log(offsetPage);
+	target = $('input[name="eml-submit"]');
+	target.attr('data-offset',offsetPage);
+	target.trigger( "click" );
+}
 
 /**
  * resfreshMediaFilter
@@ -102,6 +117,8 @@ jQuery(function(){
 	//filtering
 	$('input[name="eml-submit"]').click(function(e){
 		e.preventDefault();
+		var offset = $(this).attr('data-offset');
+		$(this).addClass('processing');
 		var container = $(this).parents('.eml-filter-block').attr('id'),
 			values = [];
 		$('.eml-js-filter:checked,.cs-link,.eml-js-term').each(function(){
@@ -116,11 +133,11 @@ jQuery(function(){
 
 		});
 		//console.log(values);
-		mediaFilter(container, values,$ajaxurl);
+		mediaFilter(container, values,$ajaxurl,offset);
 	});
 
 	//update acf && mime type on category update
-	$('select[name="eml-media-tax"]').change(function(){
+	$('select[name="cs-link"]').change(function(){
 		var wrapper = $(this).parents('.eml-filter-block');
 		wrapper.find('input[type="submit"]').prop('disabled', true);
 		var selectedMediaTax = $(this).find(":selected").val();
