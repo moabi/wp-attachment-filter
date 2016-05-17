@@ -42,7 +42,7 @@ class Wp_Attachment_Filter_Public {
 	 */
 	private $version;
 
-	public $NumberOfPosts = 20;
+	public $NumberOfPosts = 30;
 
 	/**
 	 * Initialize the class and set its properties.
@@ -65,7 +65,8 @@ class Wp_Attachment_Filter_Public {
 	 */
 	public function enqueue_styles() {
 		global $post;
-		if( has_shortcode( $post->post_content, 'mediabycategory') ) {
+		$post_content = (isset($post->post_content)) ? $post->post_content : null;
+		if( has_shortcode( $post_content, 'mediabycategory') ) {
 			wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/wp-attachment-filter-public.css', array(), $this->version, 'all');
 		}
 		$wp_payzen_css = get_option('wp-attachment-filter-mpf');
@@ -83,7 +84,8 @@ class Wp_Attachment_Filter_Public {
 	public function enqueue_scripts() {
 
 		global $post;
-		if( has_shortcode( $post->post_content, 'mediabycategory') ) {
+		$post_content = (isset($post->post_content)) ? $post->post_content : null;
+		if( has_shortcode($post_content, 'mediabycategory') ) {
 			wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/wp-attachment-filter-public.js', array('jquery'), $this->version, true);
 		}
 
@@ -243,10 +245,11 @@ class Wp_Attachment_Filter_Public {
 	 * @param $default_term
 	 * @return WP_Query
 	 */
-	public function eml_default_query($default_term){
+	public function eml_default_query($default_term,$is_filter = false){
 		wp_reset_postdata();
 		wp_reset_query();
 		$paged = ( get_query_var('paged') ) ? get_query_var('paged') : 1;
+		$number_of_post = ($is_filter == true) ? '-1' : $this->NumberOfPosts;
 		//get default query
 		if(isset($default_term) && !empty($default_term)){
 			$filter_item = array(
@@ -261,7 +264,7 @@ class Wp_Attachment_Filter_Public {
 			$query_args = array(
 				'post_type' => 'attachment',
 				'post_status' => 'inherit',
-				'posts_per_page' => 30,
+				'posts_per_page' => $number_of_post,
 				'paged' => $paged,
 				'tax_query' => $filter_item
 			);
@@ -270,7 +273,7 @@ class Wp_Attachment_Filter_Public {
 			$query_args = array(
 				'post_type' => 'attachment',
 				'post_status' => 'inherit',
-				'posts_per_page' => 30,
+				'posts_per_page' => $number_of_post,
 				'paged' => $paged
 			);
 		}
@@ -332,7 +335,7 @@ class Wp_Attachment_Filter_Public {
 		} else {
 			//if there is no post -> gather every mime types as if there is a result there should be one mime type
 			// this query should be for a "no term" query
-			$attachmentQuery = $this->eml_default_query(false);
+			$attachmentQuery = $this->eml_default_query(false,true);
 			while ($attachmentQuery->have_posts()) {
 				$attachmentQuery->the_post();
 				$attachmentID = get_the_ID();
@@ -367,31 +370,37 @@ class Wp_Attachment_Filter_Public {
 	 * @param $post_id integer - optional if you want to retrieve for a uniq attachment
 	 * @return array
 	 */
-	public function get_attachment_custom($post_id = 0){
+	public function get_attachment_custom($post_id = false){
 		$values = array();
-		if($post_id == 0){
+		if($post_id == false){
 			$attachmentQuery = $this->eml_default_query(false);
+
 			while ($attachmentQuery->have_posts()) {
 				$attachmentQuery->the_post();
 				$attachmentID = get_the_ID();
-				$custom_fields = get_post_custom($attachmentID);
-				array_push($values, $custom_fields );
+				$custom_fields = get_post_custom_keys($attachmentID);
+				$keys = array_values($custom_fields);
+				foreach ($keys as $key){
+					array_push($values, $key );
+				}
+
 			}
 		} else {
-			$custom_fields = get_post_custom($post_id);
-			array_push($values, $custom_fields );
+			$custom_fields = get_post_custom_keys($post_id);
+			$keys = array_values($custom_fields);
+			foreach ($keys as $key){
+				array_push($values, $key );
+			}
 		}
-		//var_dump($values[0]);
 
-		$uniq_terms = $values[0];
+		$uniq_terms = $values;
 		//get rid of _ values
 		foreach($uniq_terms as $key => $uniq_term){
-			if(substr($key,0,1) == '_'){
+			if(substr($uniq_term,0,1) == '_'){
 				unset($uniq_terms[$key]);
 			}
 		}
 
-		//var_dump($uniq_terms);
 
 		return $uniq_terms;
 
@@ -419,11 +428,18 @@ class Wp_Attachment_Filter_Public {
 		} else {
 			//if there is no post -> gather every mime types as if there is a result there should be one mime type
 			// this query should be for a "no term" query
-			$attachmentQuery = $this->eml_default_query(false);
+			$attachmentQuery = $this->eml_default_query(false,true);
 			while ($attachmentQuery->have_posts()) {
 				$attachmentQuery->the_post();
 				$type = get_field($acf_field);
-				array_push($values, $type );
+				if(is_array($type)){
+					foreach ($type as $type_uniq){
+						array_push($values, $type_uniq );
+					}
+				} else{
+					array_push($values, $type );
+				}
+
 			}
 			$output .= '';
 		}
@@ -456,12 +472,12 @@ class Wp_Attachment_Filter_Public {
 	 * display a block filter with all filtering options
 	 *
 	 * @param $default_term string taxonomy slug
-	 * @param $uuid string
+	 * @param $uuid string unique CSS ID to js target
 	 * @return string
 	 */
 	public function eml_media_filters($default_term,$uuid){
 
-		$eml_default_query = $this->eml_default_query($default_term);
+		$eml_default_query = $this->eml_default_query($default_term,true);
 
 		$output = '<div class="row " data-default-term="'.$default_term.'"><div id="'.$uuid.'" class="col-md-12 eml-filter-block"><div class="padd-1">';
 		$output .= '<h2><i class="fa fa-filter"></i>Filter <i class="fa fa-refresh fa-spin js-spin-it" style="display: none;"></i></h2>';
@@ -477,7 +493,6 @@ class Wp_Attachment_Filter_Public {
 			$output .= $this->get_acf_media_by_tax($eml_default_query,$acf_wpaf_item,$acf_wpaf_item);
 		}
 
-
 		//Taxonomy terms
 		$default_to_all = ($default_term == 1) ? 'selected': '';
 		$output .= '<ul class="col-md-4">';
@@ -492,7 +507,6 @@ class Wp_Attachment_Filter_Public {
 
 		//LAST BLOCK
 		$output .= '<div class="row"><div class="col-md-12">';
-
 
 		// ORDER BY
 		$output .= '<div class="col-md-3 "><ul class="horizontal-list">';
@@ -518,7 +532,6 @@ class Wp_Attachment_Filter_Public {
 
 		$output .= '</div></div>';
 		//#LAST BLOCK
-
 
 		$output .= '</div></div></div>';
 
@@ -638,8 +651,6 @@ class Wp_Attachment_Filter_Public {
 
 	}
 
-
-
 	/**
 	 * get_default_query
 	 *
@@ -664,12 +675,14 @@ class Wp_Attachment_Filter_Public {
 			if($query_args['is_search'] == true){
 				$count = $query_images->post_count;
 				$output .= '<div class="row"><div class="col-md-12"><h2 class="eml-results"> Results ('.$total_found_posts.'):';
-				if($total_found_posts > 20){
+				if($total_found_posts > $this->NumberOfPosts){
+					$offsetN = $query_args['args']['offset'];
 					$output .= '<span class="nav-ajx custom-pagination">';
 					for ($x = 0; $x <= $paged_num; $x++) {
 						$offsetCount = $this->NumberOfPosts * $x;
+						$classOffset = ($offsetN == $offsetCount) ? 'current': '';
 						$page = $x +1;
-						$output .= '<a href="javascript:void(0)" onclick="wpafOffsetQuery('.$offsetCount .')">'.$page .'</a>';
+						$output .= '<a class="'.$classOffset.'" href="javascript:void(0)" onclick="wpafOffsetQuery('.$offsetCount .')">'.$page .'</a>';
 					}
 					$output .= '</span>';
 				}
@@ -680,6 +693,7 @@ class Wp_Attachment_Filter_Public {
 				$output .= '</div></div>';
 			}
 
+			//DISPLAY FILTER BLOCK
 			if($query_args['shortocode_filter'] == true && $query_args['filter'] == true){
 				$uniqid = uniqid('eml-case-');
 				$output .=  $this->eml_media_filters($query_args['shortcode_terms'],$uniqid);
@@ -741,7 +755,20 @@ class Wp_Attachment_Filter_Public {
 					$output .=  'Copyright : '.get_field('copyright').' <br />' ;
 				endif;
 				if(get_field('utilisation')):
-					$output .=  'Utilisation : '.get_field('utilisation').' <br />' ;
+					$media_uses = get_field('utilisation');
+					$uses_data = '';
+					if(is_array($media_uses)){
+						$i = 0;
+						foreach ($media_uses as $media_use){
+							$i++;
+							$sep = (count($media_uses) == $i) ? '.':',';
+							$uses_data .= $media_use.$sep.' ';
+						}
+					} else {
+						$uses_data = $media_uses;
+					}
+
+					$output .=  'Utilisation : '.$uses_data.' <br />' ;
 				endif;
 				if(!empty($description)){
 					$output .=  '<a href="#eml-s'.$attachmentID.'" class="mpf-inline">Description</a> <br />' ;
@@ -793,7 +820,7 @@ class Wp_Attachment_Filter_Public {
 	 *
 	 * $args
 	 * @param $default_term string - the media category slug
-	 * @param filter
+	 * @param filter boolean
 	 * @return string
 	 */
 	public function get_eml_medias($args = array('filter' => false)){
@@ -814,25 +841,25 @@ class Wp_Attachment_Filter_Public {
 			$query_images_args = array(
 				'post_type' => 'attachment',
 				'post_status' => 'inherit',
-				'posts_per_page' => 30,
+				'posts_per_page' => $this->NumberOfPosts,
 				'paged' => $paged,
 				'orderby' => 'date',
 				'order' => 'DESC',
 				'tax_query' => $default_term_filtering
 			);
 
+
 		} else {
 			// no term from shortcode - build a general query without tax parameter
 			$query_images_args = array(
 				'post_type' => 'attachment',
 				'post_status' => 'inherit',
-				'posts_per_page' => 30,
+				'posts_per_page' => $this->NumberOfPosts,
 				'paged' => $paged,
 				'orderby' => 'date',
 				'order' => 'DESC'
 			);
 		}
-
 
 		//build general query
 		$query_args = array(

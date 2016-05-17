@@ -33,18 +33,23 @@
                     //get data from options
                     $acf_wpaf_items_option = get_option('wpaf-acf-items');
                     //list available custom fields for attachment type
-                    $acf_wpaf_items = $wpafp->get_attachment_custom();
-
+                    $acf_wpaf_items = $wpafp->get_attachment_custom(false);
+                    //var_dump($acf_wpaf_items_option);
                     echo '<ul>';
-                    foreach($acf_wpaf_items as $key => $acf_wpaf_item){
-                        if(is_array($acf_wpaf_items_option)){
-                            $checked_acf = (in_array($key,$acf_wpaf_items_option)) ? 'checked="checked"': '';
-                        } else {
-                            $checked_acf = '';
-                        }
+                    if($acf_wpaf_items){
+                        foreach($acf_wpaf_items as $acf_wpaf_item){
+                            if(is_array($acf_wpaf_items_option)){
+                                $checked_acf = (in_array($acf_wpaf_item,$acf_wpaf_items_option)) ? 'checked="checked"': '';
+                            } else {
+                                $checked_acf = '';
+                            }
 
-                        echo '<li><input '.$checked_acf.' name="wpaf-acf-items[]" type="checkbox" value="'.$key.'" /> <label for="'.$key.'">'.$key.'</label></li>';
+                            echo '<li><input '.$checked_acf.' name="wpaf-acf-items[]" type="checkbox" value="'.$acf_wpaf_item.'" /> <label for="'.$acf_wpaf_item.'">'.$acf_wpaf_item.'</label></li>';
+                        }
+                    } else {
+                        echo 'no custom fields are attached';
                     }
+
                     echo '</ul>';
                     ?>
 

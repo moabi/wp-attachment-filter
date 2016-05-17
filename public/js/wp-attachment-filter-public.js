@@ -54,13 +54,16 @@ function mediaFilter(container,values,$ajaxurl,offset){
 
 }
 
+
 /**
+ * wpafOffsetQuery
+ * trigger an ajx query with offset data
  *
  * @param offsetPage
+ * @param el
  */
 function wpafOffsetQuery(offsetPage){
 
-	//console.log(offsetPage);
 	target = $('input[name="eml-submit"]');
 	target.attr('data-offset',offsetPage);
 	target.trigger( "click" );
