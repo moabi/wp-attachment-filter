@@ -712,6 +712,8 @@ class Wp_Attachment_Filter_Public {
 				$wording = get_field( "wording", $attachmentID );
 				$fotolia_id = get_field('fotolia');
 				$comments_count = get_comments_number( $attachmentID );
+				$filename_only = basename( get_attached_file( $attachmentID ) );
+				$fullsize_path = get_attached_file( $attachmentID ); // Full path
 
 				$description = get_post()->post_content;
 				//var_dump($description);
@@ -728,9 +730,51 @@ class Wp_Attachment_Filter_Public {
 						break;
 					case 'application/pdf':
 						$img = '';
+						/*
+						if (class_exists('Imagick')) {
+							try {
+								$im = new Imagick($fullsize_path);
+								$im->setIteratorIndex(1);
+								$im->setCompression(Imagick::COMPRESSION_LZW);
+								$im->setCompressionQuality(90);
+								$im->writeImage(get_wp_attachment_filter_plugin_dir() . 'public/pdf/' . $filename_only);
+							}
+							catch (Exception $e) {
+								die('Error when creating a thumbnail: ' . $e->getMessage());
+							}
+						}
 
-						$img .= '<span class="attac-name">'.get_the_title($attachmentID).'</span>';
+*/
+						$fileimg = get_wp_attachment_filter_plugin_dir() . 'public/pdf/'.$filename_only.'.jpg';
+						$file_url = get_wp_attachment_filter_plugin_uri() . 'public/pdf/'.$filename_only.'.jpg';
 
+						if(!file_exists($fileimg)){
+
+							if (class_exists('Imagick')) {
+								try {
+									$newIm = new WpAttachmentFilterUtilities('wp-attachment-filter', 'v1');
+									$newIm->extract($fullsize_path, $fileimg);
+									if(file_exists($fileimg)){
+										$img .= '<a href="'.$file_url.'" class="mfp-img" title="'.$filename_only.'">';
+										$img .= '<img src="'.$file_url.'" alt="'.$filename_only.'"/>';
+										$img .= '</a>';
+									}
+
+
+								}
+								catch (Exception $e) {
+									//$img = 'error'.$e->getMessage();
+									//die('Error when creating a thumbnail: ' . $e->getMessage());
+								}
+							}
+						} else {
+							$img .= '<a href="'.$file_url.'" class="mfp-img" title="'.$filename_only.'">';
+							$img .= '<img src="'.$file_url.'" alt="'.$filename_only.'"/>';
+							$img .= '</a>';
+
+						}
+						$img .= '<span class="attac-name">' . get_the_title($attachmentID) . '</span>';
+						
 						break;
 					default:
 						$img = '<span class="attac-name">'.get_the_title($attachmentID).'</span>';

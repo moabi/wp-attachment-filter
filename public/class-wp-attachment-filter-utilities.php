@@ -42,7 +42,8 @@ class WpAttachmentFilterUtilities
      * @var      string $version The current version of this plugin.
      */
     private $version;
-
+    const FORMAT_JPG = 'jpg';
+    const FORMAT_PNG = 'png';
 
     /**
      * Initialize the class and set its properties.
@@ -59,6 +60,30 @@ class WpAttachmentFilterUtilities
 
     }
 
+    /**
+     * @param string $source      source filepath
+     * @param string $destination destination filepath
+     * @param string $format      destination format
+     *
+     * @return bool
+     */
+    public static function extract($source, $destination, $format = self::FORMAT_JPG)
+    {
+        if (!extension_loaded('Imagick')) {
+            return false;
+        }
+        $imagick = new \Imagick($source . '[0]');
+        $imagick->setFormat($format);
+        return $imagick->writeImage($destination);
+    }
+
+    /**
+     * get_ext
+     * detect uploaded file type
+     * 
+     * @param $mime_type
+     * @return int|string
+     */
     public function get_ext($mime_type){
         $extensions = array(
             'hqx'	=>	array('application/mac-binhex40', 'application/mac-binhex', 'application/x-binhex40', 'application/x-mac-binhex40'),
