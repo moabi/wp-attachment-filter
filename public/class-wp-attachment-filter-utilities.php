@@ -261,4 +261,19 @@ class WpAttachmentFilterUtilities
 
         return $extension_nice_name;
     }
+
+    public function get_pdf_uri() {
+        $data = array();
+        $attachmentID = (isset($_POST['pdfID'])) ? intval($_POST['pdfID']) : false;
+        $pdf_url = ($attachmentID) ? wp_get_attachment_url( $attachmentID ) : 'not found';
+        $plugin_uri_pdf = get_wp_attachment_filter_plugin_uri().'public/js/pdf/';
+        $plugin_uri_worker = get_wp_attachment_filter_plugin_uri().'public/js/pdf/pdf.worker.js';
+        array_push($data,$pdf_url );
+        array_push($data,$plugin_uri_pdf );
+
+
+       echo json_encode($data);
+
+        wp_die(); // this is required to terminate immediately and return a proper response
+    }
 }

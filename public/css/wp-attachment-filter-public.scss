@@ -117,6 +117,55 @@ span.attac-name{text-align:left;display:block;background-color:#fff;line-height:
 .eml-filter-block li:hover > ul.submenu{display: block;}
 .eml-filter-block ul.horizontal-list{position: relative;width: 100%;margin: 0;padding: 0;}
 .eml-filter-block ul.horizontal-list li{display: inline-block;float: left;}
+
+.pdf-canvas-wrapper{
+  position: fixed;
+  background: #fff;
+  top: 1em;
+  display: block;
+  z-index: 9;
+  left: 0;
+  width: 100%;
+  right: 0;
+  margin: auto;
+  max-height: 90%;
+  max-width: 80%;
+  overflow: auto;
+}
+#pdf-canvas{width: 100%;height: auto;}
+.pdf-topbar{
+  position: fixed;
+  bottom: 0;
+  height: 3em;
+  background: #696969;
+  padding: 0 2%;
+  width: 100%;
+  left: 0;
+  z-index: 10;
+  color: #fff;
+}
+.pdf-topbar button{display: inline-block;margin: 10px 1em 0;}
+.pdf-topbar .pdf-pager{float:right;display: inline-block;margin:10px 0;}
+.pdf-closer{
+  float: right;
+  color: #FFFFFF;
+  padding: 1em 2em;
+  font-size: 14px;
+  text-transform: uppercase;
+  line-height: 1em;
+  margin: 0 2em;
+  cursor: pointer;
+}
+.pdf-viewer{
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 99;
+  background: #000;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+}
 /**
 Animations
 */

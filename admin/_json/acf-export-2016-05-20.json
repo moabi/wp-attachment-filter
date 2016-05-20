@@ -1,0 +1,103 @@
+[
+    {
+        "key": "group_55a37415a6f03",
+        "title": "Medias fields",
+        "fields": [
+            {
+                "key": "field_563b172542679",
+                "label": "Copyright",
+                "name": "copyright",
+                "type": "text",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "maxlength": "",
+                "readonly": 0,
+                "disabled": 0
+            },
+            {
+                "key": "field_563b17464267a",
+                "label": "Utilisation",
+                "name": "utilisation",
+                "type": "checkbox",
+                "instructions": "",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "Print": "Print",
+                    "Web": "Web",
+                    "Applicatif": "Applicatif",
+                    "Interne": "Interne",
+                    "Commerciale": "Commerciale"
+                },
+                "default_value": [
+
+                ],
+                "layout": "vertical",
+                "toggle": 0
+            },
+            {
+                "key": "field_56f40ab2a8044",
+                "label": "languages",
+                "name": "languages",
+                "type": "select",
+                "instructions": "",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "FR": "FR",
+                    "EN": "EN",
+                    "DE": "DE",
+                    "PT": "PT",
+                    "ES": "ES"
+                },
+                "default_value": [
+                    "FR"
+                ],
+                "allow_null": 0,
+                "multiple": 0,
+                "ui": 0,
+                "ajax": 0,
+                "placeholder": "",
+                "disabled": 0,
+                "readonly": 0
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "attachment",
+                    "operator": "==",
+                    "value": "all"
+                }
+            ]
+        ],
+        "menu_order": 0,
+        "position": "normal",
+        "style": "default",
+        "label_placement": "top",
+        "instruction_placement": "label",
+        "hide_on_screen": "",
+        "active": 1,
+        "description": ""
+    }
+]

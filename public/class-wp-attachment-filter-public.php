@@ -714,6 +714,9 @@ class Wp_Attachment_Filter_Public {
 				$comments_count = get_comments_number( $attachmentID );
 				$filename_only = basename( get_attached_file( $attachmentID ) );
 				$fullsize_path = get_attached_file( $attachmentID ); // Full path
+				$fileimg = get_wp_attachment_filter_plugin_dir() . 'public/pdf/'.$filename_only.'.jpg';
+				$file_url = get_wp_attachment_filter_plugin_uri() . 'public/pdf/'.$filename_only.'.jpg';
+				$pdf_readonly = get_field('pdf_readonly');
 
 				$description = get_post()->post_content;
 				//var_dump($description);
@@ -730,25 +733,12 @@ class Wp_Attachment_Filter_Public {
 						break;
 					case 'application/pdf':
 						$img = '';
-						/*
-						if (class_exists('Imagick')) {
-							try {
-								$im = new Imagick($fullsize_path);
-								$im->setIteratorIndex(1);
-								$im->setCompression(Imagick::COMPRESSION_LZW);
-								$im->setCompressionQuality(90);
-								$im->writeImage(get_wp_attachment_filter_plugin_dir() . 'public/pdf/' . $filename_only);
-							}
-							catch (Exception $e) {
-								die('Error when creating a thumbnail: ' . $e->getMessage());
-							}
-						}
-
-*/
-						$fileimg = get_wp_attachment_filter_plugin_dir() . 'public/pdf/'.$filename_only.'.jpg';
-						$file_url = get_wp_attachment_filter_plugin_uri() . 'public/pdf/'.$filename_only.'.jpg';
-
-						if(!file_exists($fileimg)){
+						/**
+						 * If file does not exist, try to generate it with imagick
+						 * if readonly, display a thumbnail
+						 * else no img will be shown
+						 */
+						if(!file_exists($fileimg) && $pdf_readonly != true){
 
 							if (class_exists('Imagick')) {
 								try {
@@ -759,20 +749,26 @@ class Wp_Attachment_Filter_Public {
 										$img .= '<img src="'.$file_url.'" alt="'.$filename_only.'"/>';
 										$img .= '</a>';
 									}
-
-
 								}
 								catch (Exception $e) {
 									//$img = 'error'.$e->getMessage();
 									//die('Error when creating a thumbnail: ' . $e->getMessage());
 								}
 							}
+						} elseif ($pdf_readonly == true){
+
+							$img .= '<img class="js-pdfreader" data-id="'.$attachmentID.'" src="'.get_wp_attachment_filter_plugin_uri().'/public/img/open-book.png" alt="'.$filename_only.'"/>';
+
 						} else {
 							$img .= '<a href="'.$file_url.'" class="mfp-img" title="'.$filename_only.'">';
 							$img .= '<img src="'.$file_url.'" alt="'.$filename_only.'"/>';
 							$img .= '</a>';
 
 						}
+						$img .= '<div id="pdfviewer-'.$attachmentID.'" class="pdf-viewer" style="display: none;">';
+						$img .= '<div class="pdf-topbar"><div class="pdf-closer js-pdf-close">'.__('Close','wp-attachment-filter').'</div> <button id="next">'.__('Next','wp-attachment-filter').'</button><div class="pdf-pager">Page: <span id="page_num"></span> / <span id="page_count"></span></div><button id="prev">'.__('Previous','wp-attachment-filter').'</button> </div>';
+						$img .= '<div id="pdf-'.$attachmentID.'" class="pdf-canvas-wrapper"><canvas id="pdf-canvas"></canvas></div>';
+						$img .= '</div>';
 						$img .= '<span class="attac-name">' . get_the_title($attachmentID) . '</span>';
 						
 						break;
@@ -829,7 +825,14 @@ class Wp_Attachment_Filter_Public {
 				if(current_user_can('edit_posts')){
 					$output .= '<a class="edit-link" target="_blank" href="'.get_edit_post_link().'">Edit</a>';
 				}
-				$output .=  '<a  target="_blank" class="download-link btn" download="" href="'.wp_get_attachment_url( $attachmentID ).'" class="forcetodownload btn">'.__('download','assets').'</a>';
+
+				if($pdf_readonly == true ){
+					$output .=  '<a class="download-link js-pdfreader btn" href="javascript:void(0)"  data-id="'.$attachmentID.'">'.__('READ','assets').'</a>';
+
+				} else {
+					$output .=  '<a  target="_blank" class="download-link btn forcetodownload" download="" href="'.wp_get_attachment_url( $attachmentID ).'" >'.__('download','assets').'</a>';
+
+				}
 
 
 				//$output .=  wp_get_attachment_url( $attachmentID );
