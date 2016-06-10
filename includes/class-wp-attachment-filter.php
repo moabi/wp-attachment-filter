@@ -205,6 +205,14 @@ class Wp_Attachment_Filter {
 		add_image_size( 'eml-preview', 150, 80,false );
 
 		$this->loader->add_action( 'wp_ajax_get_pdf',$plugin_utilities, 'get_pdf_uri' );
+		//add a loading bar
+		$wp_mpf_src = get_option('wp-attachment-filter-loading-bar');
+		if($wp_mpf_src == 'on') {
+			$this->loader->add_action('wp_footer', $plugin_utilities, 'add_loading_bar');
+		}
+		//quick edit for custom fields
+		$this->loader->add_action( 'quick_edit_custom_box',$plugin_utilities, 'display_custom_quickedit_attachment', 10, 2 );
+		$this->loader->add_filter( 'manage_posts_columns',$plugin_utilities, 'manage_wp_posts_be_qe_manage_posts_columns', 10, 2 );
 
 
 	}

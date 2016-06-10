@@ -66,7 +66,9 @@
 
             <tr valign="top">
                 <th scope="row">
+                    <label for="wp-attachment-filter-mpf">
                     Include the excellent <a target="_blank" href="https://github.com/dimsemenov/Magnific-Popup/">Magnific-Popup</a> by Dimsemenov ?
+                    </label>
                 </th>
                 <td>
                     <?php
@@ -78,6 +80,25 @@
                     }
                     ?>
                     <input <?php echo $checked_dim; ?> type="checkbox" name="wp-attachment-filter-mpf" id="wp-attachment-filter-mpf" />
+                </td>
+            </tr>
+
+            <tr>
+                <th scope="row">
+                    <label for="wp-attachment-filter-loading-bar">
+                    Include a loading bar ?
+                    </label>
+                </th>
+                <td>
+                    <?php
+                    $wp_payzen_loader = get_option('wp-attachment-filter-loading-bar');
+                    if($wp_payzen_loader == 'on') {
+                        $checked_dim_loader = 'checked';
+                    } else {
+                        $checked_dim_loader = '';
+                    }
+                    ?>
+                    <input <?php echo $checked_dim_loader; ?> type="checkbox" name="wp-attachment-filter-loading-bar" id="wp-attachment-filter-loading-bar" />
                 </td>
             </tr>
         </table>

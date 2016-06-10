@@ -674,7 +674,7 @@ class Wp_Attachment_Filter_Public {
 		if ( $query_images->have_posts() ) {
 			if($query_args['is_search'] == true){
 				$count = $query_images->post_count;
-				$output .= '<div class="row"><div class="col-md-12"><h2 class="eml-results"> Results ('.$total_found_posts.'):';
+				$output .= '<div class="row"><div class="col-md-12"><h2 class="eml-results"> '.__('Results','wp-attachment-filter').' ('.$total_found_posts.'):';
 				if($total_found_posts > $this->NumberOfPosts){
 					$offsetN = $query_args['args']['offset'];
 					$output .= '<span class="nav-ajx custom-pagination">';
@@ -686,7 +686,7 @@ class Wp_Attachment_Filter_Public {
 					}
 					$output .= '</span>';
 				}
-
+				$output .= '<span onclick="closeSearchResults(this)" class="wpaf-close">X</span>';
 				$output .= '</h2>';
 				//$output .= $query_args['args']['tax_query'][0]['terms'];
 				$output .= '<div class="em-filters-active"></div>';

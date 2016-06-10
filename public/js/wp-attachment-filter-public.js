@@ -7,10 +7,18 @@
  </div>
  */
 
+/**
+ * showLoadingProgress
+ * add a progress bar
+ */
 function showLoadingProgress(){
 	$('body').addClass('loading');
 	$('#loading-bar').addClass('bar animating');
 }
+/**
+ * hideLoadingProgress
+ * hide progress bar
+ */
 function hideLoadingProgress(){
 	$('body').removeClass('loading');
 	$('#loading-bar').removeClass('bar animating');
@@ -21,8 +29,14 @@ var pdfDoc = null,
 	pageNumPending = null,
 	scale = 1.2,
 	canvas = document.getElementById('pdf-canvas'),
-	ctx = canvas.getContext('2d'),
+	ctx = (canvas) ? canvas.getContext('2d') : '',
 	pdfViewer = $('.pdf-viewer');
+if(canvas !== null){
+	document.getElementById('next').addEventListener('click', onNextPage);
+	document.getElementById('prev').addEventListener('click', onPrevPage);
+}
+
+
 /**
  * Get page info from document, resize canvas accordingly, and render page.
  * @param num Page number.
@@ -74,7 +88,7 @@ function onPrevPage() {
 	pageNum--;
 	queueRenderPage(pageNum);
 }
-document.getElementById('prev').addEventListener('click', onPrevPage);
+
 /**
  * Displays next page.
  */
@@ -85,7 +99,6 @@ function onNextPage() {
 	pageNum++;
 	queueRenderPage(pageNum);
 }
-document.getElementById('next').addEventListener('click', onNextPage);
 
 function pdfCloseViewer(){
 	pdfViewer.fadeOut();
@@ -187,6 +200,7 @@ function mediaFilter(container,values,$ajaxurl,offset){
 		.always(function() {
 			$resultContainer.addClass('active');
 			$('input[name="eml-submit"]').removeClass('processing');
+			hideLoadingProgress();
 		});
 
 }
@@ -241,10 +255,18 @@ function resfreshMediaFilter(wrapper,mediaTax,$ajaxurl){
 		.always(function() {
 			wrapper.find('input[type="submit"]').prop('disabled', false);
 			$('.js-spin-it').fadeOut();
+			hideLoadingProgress();
 		});
 
 }
 
+/**
+ * closeSearchResults
+ */
+function closeSearchResults(target){
+	targetId = $(target).parents('.filtering-results-eml');
+	targetId.removeClass('active').empty().fadeOut().fadeIn();
+}
 
 jQuery(function(){
 	'use strict';
@@ -253,6 +275,7 @@ jQuery(function(){
 		root = ( body.data('root').length ) ? body.data('root') + '/' : '',
 		base = '/' + root,
 		$ajaxurl = base+'wp-admin/admin-ajax.php';
+
 
 	//get pdf
 	$('.js-pdfreader').click(function (e) {
@@ -267,6 +290,7 @@ jQuery(function(){
 	//filtering
 	$('input[name="eml-submit"]').click(function(e){
 		e.preventDefault();
+		showLoadingProgress();
 		var offset = $(this).attr('data-offset');
 		$(this).addClass('processing');
 		var container = $(this).parents('.eml-filter-block').attr('id'),
@@ -288,6 +312,7 @@ jQuery(function(){
 
 	//update acf && mime type on category update
 	$('select[name="cs-link"]').change(function(){
+		showLoadingProgress();
 		var wrapper = $(this).parents('.eml-filter-block');
 		wrapper.find('input[type="submit"]').prop('disabled', true);
 		var selectedMediaTax = $(this).find(":selected").val();

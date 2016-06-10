@@ -131,6 +131,7 @@ class Wp_Attachment_Filter_Admin {
 		register_setting( 'wp-attachment-filter-settings-group', 'wpaf-media-tax' );
 		register_setting( 'wp-attachment-filter-settings-group', 'wpaf-acf-items' );
 		register_setting( 'wp-attachment-filter-settings-group', 'wp-attachment-filter-mpf' );
+		register_setting( 'wp-attachment-filter-settings-group', 'wp-attachment-filter-loading-bar' );
 	}
 
 }

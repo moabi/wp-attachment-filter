@@ -60,7 +60,72 @@ class WpAttachmentFilterUtilities
 
     }
 
+
     /**
+     * add_loading_bar
+     */
+    public function add_loading_bar(){
+
+        $output = '<div id="general-loader" class="loader"><div id="seconds" class="seconds"><div id="loading-bar"></div></div></div>';
+        echo $output;
+
+    }
+
+    /**
+     * display_custom_quickedit_attachment
+     *
+     * @param $column_name
+     * @param $post_type
+     */
+    public function display_custom_quickedit_attachment( $column_name, $post_type ) {
+        static $printNonce = TRUE;
+        /*
+        if ( $printNonce ) {
+            $printNonce = FALSE;
+            wp_nonce_field( plugin_basename( __FILE__ ), 'attachment_edit_nonce' );
+        }*/
+
+        ?>
+        <fieldset class="inline-edit-col-right inline-edit-attachment">
+            <div class="inline-edit-col column-<?php echo $column_name; ?>">
+                <label class="inline-edit-group">
+                    <?php
+                    switch ( $column_name ) {
+                        case 'Language':
+                            ?><span class="title">Language</span><input name="book_author" /><?php
+                            break;
+                        case 'inprint':
+                            ?><span class="title">In Print</span><input name="inprint" type="checkbox" /><?php
+                            break;
+                    }
+                    ?>
+                </label>
+            </div>
+        </fieldset>
+        <?php
+    }
+
+
+    public function manage_wp_posts_be_qe_manage_posts_columns( $columns, $post_type ) {
+        /**
+         * The first example adds our new columns at the end.
+         * Notice that we're specifying a post type because our function covers ALL post types.
+         *
+         * Uncomment this code if you want to add your column at the end
+         */
+        if ( $post_type == 'attachments' ) {
+            $columns[ 'release_date' ] = 'Release Date';
+            $columns[ 'coming_soon' ] = 'Coming Soon';
+            $columns[ 'film_rating' ] = 'Film Rating';
+        }
+            
+        return $columns;
+    }
+    
+    /**
+     * extract
+     * Imagick function to extract pdf cover
+     *
      * @param string $source      source filepath
      * @param string $destination destination filepath
      * @param string $format      destination format
@@ -262,12 +327,17 @@ class WpAttachmentFilterUtilities
         return $extension_nice_name;
     }
 
+    /**
+     * get_pdf_uri
+     * get attachment ID, fetch uri
+     * return array json
+     */
     public function get_pdf_uri() {
         $data = array();
         $attachmentID = (isset($_POST['pdfID'])) ? intval($_POST['pdfID']) : false;
         $pdf_url = ($attachmentID) ? wp_get_attachment_url( $attachmentID ) : 'not found';
         $plugin_uri_pdf = get_wp_attachment_filter_plugin_uri().'public/js/pdf/';
-        $plugin_uri_worker = get_wp_attachment_filter_plugin_uri().'public/js/pdf/pdf.worker.js';
+
         array_push($data,$pdf_url );
         array_push($data,$plugin_uri_pdf );
 
