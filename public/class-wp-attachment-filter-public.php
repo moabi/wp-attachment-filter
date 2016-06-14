@@ -182,47 +182,47 @@ class Wp_Attachment_Filter_Public {
 			case 'image/jpeg':
 			case 'image/png':
 			case 'image/gif':
-				return '<i class="fa fa-picture-o"></i>';
+				return '<img class="ico" src="'.get_wp_attachment_filter_plugin_uri().'/public/img/picture.svg"/>';
 				break;
 			case 'image/x-icon':
-				return '<i class="fa fa-file-image-o"></i>';
+				return '<img class="ico" src="'.get_wp_attachment_filter_plugin_uri().'/public/img/ico.svg"/>';
 				break;
 			case 'video/mpeg':
 			case 'video/mp4':
 			case 'video/quicktime':
-				return '<i class="fa fa-video-camera"></i>';
+				return '<img class="ico" src="'.get_wp_attachment_filter_plugin_uri().'/public/img/video-camera.svg"/>';
 				break;
 			case 'image/vnd.adobe.photoshop':
 			case 'image/vnd.adobe.illustrator':
-				return '<i class="fa fa-file-o"></i>';
+			return '<img class="ico" src="'.get_wp_attachment_filter_plugin_uri().'/public/img/ppt.svg"/>';
 				break;
 			case 'application/pdf':
-				return '<i class="fa fa-file-pdf-o"></i>';
+				return '<img class="ico" src="'.get_wp_attachment_filter_plugin_uri().'/public/img/pdf-file-format-symbol.svg"/>';
 				break;
 			case 'application/powerpoint':
 			case 'application/mspowerpoint':
 			case 'application/x-mspowerpoint':
 			case 'application/vnd.ms-powerpoint':
-				return '<i class="fa fa-file-powerpoint-o"></i>';
+				return '<img class="ico" src="'.get_wp_attachment_filter_plugin_uri().'/public/img/ppt.svg"/>';
 				break;
 			case 'application/msword':
-				return '<i class="fa fa-file-word-o"></i>';
+				return '<img class="ico" src="'.get_wp_attachment_filter_plugin_uri().'/public/img/word.svg"/>';
 				break;
 			case 'application/excel':
 			case 'application/x-excel':
-				return '<i class="fa fa-file-excel-o"></i>';
+				return '<img class="ico" src="'.get_wp_attachment_filter_plugin_uri().'/public/img/excel.svg"/>';
 				break;
 			case 'application/zip':
 			case 'application/x-compressed':
-				return '<i class="fa fa-file-archive-o"></i>';
+				return '<img class="ico" src="'.get_wp_attachment_filter_plugin_uri().'/public/img/zip.svg"/>';
 				break;
 			case 'text/csv':
 			case 'text/plain':
 			case 'text/xml':
-				return '<i class="fa fa-file-text"></i>';
+				return '<img class="ico" src="'.get_wp_attachment_filter_plugin_uri().'/public/img/text-document.svg"/>';
 				break;
 			default:
-				return '<i class="fa fa-file"></i>';
+				return '<img class="ico" src="'.get_wp_attachment_filter_plugin_uri().'/public/img/ppt.svg"/>';
 		}
 	}
 
@@ -263,7 +263,7 @@ class Wp_Attachment_Filter_Public {
 
 			$query_args = array(
 				'post_type' => 'attachment',
-				'post_status' => 'inherit',
+				'post_status' => 'inherit',//for attachment post type
 				'posts_per_page' => $number_of_post,
 				'paged' => $paged,
 				'tax_query' => $filter_item
@@ -272,7 +272,7 @@ class Wp_Attachment_Filter_Public {
 
 			$query_args = array(
 				'post_type' => 'attachment',
-				'post_status' => 'inherit',
+				'post_status' => 'inherit',//for attachment post type
 				'posts_per_page' => $number_of_post,
 				'paged' => $paged
 			);
@@ -323,15 +323,18 @@ class Wp_Attachment_Filter_Public {
 	 * @return string
 	 */
 	public function get_mime_type_by_tax($wp_query){
+
 		$output = '';
 		$values = array();
 		if ( $wp_query->have_posts() ) {
+			//we should use a cache for this
 			while ($wp_query->have_posts()) {
 				$wp_query->the_post();
 				$attachmentID = get_the_ID();
 				$type = get_post_mime_type($attachmentID);
 				array_push($values, $type );
 			}
+
 		} else {
 			//if there is no post -> gather every mime types as if there is a result there should be one mime type
 			// this query should be for a "no term" query
@@ -347,11 +350,16 @@ class Wp_Attachment_Filter_Public {
 		$uniq_terms = array_unique($values);
 		$output .= '<div class="col-md-3 eml-mime-type">';
 		$output .= '<div class="row"><ul class="dropdown">';
-		$output .= '<li><a href="#"><i class="fa fa-chevron-down"></i> Type de document</a><ul class="submenu">';
+		$output .= '<li><a href="#"><img src="'.get_wp_attachment_filter_plugin_uri().'/public/img/down-chevron.svg" class="chevron"/> '.__(" Document type","wp-attachment-filter").'</a><ul class="submenu">';
 		if(!empty($uniq_terms)){
 
 			foreach($uniq_terms as $uniq_term){
-				$output .= '<li><input id="'.$uniq_term.'"  class="eml-js-filter" name="eml-mime" type="checkbox" value="'.$uniq_term.'" /> <label for="'.$uniq_term.'">'.$uniq_term.'</label></li>';
+				if( is_string($uniq_term) ){
+					$output .= '<li><input id="'.$uniq_term.'"  class="eml-js-filter" name="eml-mime" type="checkbox" value="'.$uniq_term.'" /> <label for="'.$uniq_term.'">'.$uniq_term.'</label></li>';
+				} else {
+					$output .= '<li class="NOT A STRING"><input id="'.$uniq_term['0'].'"  class="eml-js-filter" name="eml-mime" type="checkbox" value="'.$uniq_term['0'].'" /> <label for="'.$uniq_term['0'].'">'.$uniq_term['0'].'</label></li>';
+				}
+
 			}
 
 		} else {
@@ -364,16 +372,22 @@ class Wp_Attachment_Filter_Public {
 	}
 
 	/**
-	 * get_attachment_custom
+	 * get_attachment_custom_fields
 	 * List custom fields for attachment
 	 *
 	 * @param $post_id integer - optional if you want to retrieve for a uniq attachment
 	 * @return array
 	 */
-	public function get_attachment_custom($post_id = false){
+	public function get_attachment_custom_fields($post_id = false){
 		$values = array();
 		if($post_id == false){
-			$attachmentQuery = $this->eml_default_query(false);
+			//query all attachment IDs
+			$query_args = array(
+				'post_type' => 'attachment',
+				'post_status' => 'inherit',//for attachment post type
+				'fields '	=> 'ids'
+			);
+			$attachmentQuery = new WP_Query( $query_args );
 
 			while ($attachmentQuery->have_posts()) {
 				$attachmentQuery->the_post();
@@ -396,13 +410,14 @@ class Wp_Attachment_Filter_Public {
 		$uniq_terms = $values;
 		//get rid of _ values
 		foreach($uniq_terms as $key => $uniq_term){
+			//var_dump($uniq_term);
 			if(substr($uniq_term,0,1) == '_'){
 				unset($uniq_terms[$key]);
 			}
 		}
+		$result = array_unique($uniq_terms);
 
-
-		return $uniq_terms;
+		return $result;
 
 
 	}
@@ -446,7 +461,7 @@ class Wp_Attachment_Filter_Public {
 		$uniq_terms = array_unique($values);
 		$output .= '<div id="eml-acf-'.$field_name.'" class="col-md-2 eml-acf-field">';
 		$output .= '<div class="row"><ul class="dropdown">';
-		$output .= '<li><a href="#"><i class="fa fa-chevron-down"></i> '.$field_name.'</a><ul class="submenu">';
+		$output .= '<li><a href="#"><img src="'.get_wp_attachment_filter_plugin_uri().'/public/img/down-chevron.svg" class="chevron"/>'.$field_name.'</a><ul class="submenu">';
 		if(!empty($uniq_terms)){
 
 			$i = 0;
@@ -480,7 +495,7 @@ class Wp_Attachment_Filter_Public {
 		$eml_default_query = $this->eml_default_query($default_term,true);
 
 		$output = '<div class="row " data-default-term="'.$default_term.'"><div id="'.$uuid.'" class="col-md-12 eml-filter-block"><div class="padd-1">';
-		$output .= '<h2><i class="fa fa-filter"></i>Filter <i class="fa fa-refresh fa-spin js-spin-it" style="display: none;"></i></h2>';
+		$output .= '<h2><img src="'.get_wp_attachment_filter_plugin_uri().'/public/img/filter-outline.svg" class="filter"/>Filter <img src="'.get_wp_attachment_filter_plugin_uri().'/public/img/reload.svg" class="fa-spin js-spin-it"  style="display: none;" /></h2>';
 
 		//MIME TYPE
 		$output .= $this->get_mime_type_by_tax($eml_default_query);
@@ -510,24 +525,24 @@ class Wp_Attachment_Filter_Public {
 
 		// ORDER BY
 		$output .= '<div class="col-md-3 "><ul class="horizontal-list">';
-		$output .= '<li><input id="eml-name" class="eml-js-filter"  type="radio" name="eml-orderby" value="name" /><label for="eml-name"> Name </label></li>';
-		$output .= '<li><input id="eml-date" class="eml-js-filter" checked type="radio" name="eml-orderby" value="date" /> <label for="eml-date">Date </label></li>';
+		$output .= '<li><input id="eml-name" class="eml-js-filter"  type="radio" name="eml-orderby" value="name" /><label for="eml-name"> '.__("Name","wp-attachment-filter").'</label></li>';
+		$output .= '<li><input id="eml-date" class="eml-js-filter" checked type="radio" name="eml-orderby" value="date" /> <label for="eml-date">'.__("Date","wp-attachment-filter").' </label></li>';
 		$output .= '</ul></div>';
 
 		// ASC/DES
 		$output .= '<div class="col-md-2 "> <ul class=" horizontal-list">';
-		$output .= '<li><input id="eml-asc" class="eml-js-filter" type="radio" name="eml-order" value="ASC" /><label for="eml-asc"> Asc</label> </li>';
-		$output .= '<li><input id="eml-desc" class="eml-js-filter" checked type="radio" name="eml-order" value="DESC" /><label for="eml-desc"> Desc</label> </li>';
+		$output .= '<li><input id="eml-asc" class="eml-js-filter" type="radio" name="eml-order" value="ASC" /><label for="eml-asc"> '.__("Asc","wp-attachment-filter").'</label> </li>';
+		$output .= '<li><input id="eml-desc" class="eml-js-filter" checked type="radio" name="eml-order" value="DESC" /><label for="eml-desc"> '.__("Desc","wp-attachment-filter").'</label> </li>';
 		$output .= '</ul></div>';
 
 		//SEARCH TERMS
 		$output .= '<ul class="col-md-3">';
-		$output .= '<li><input class="eml-js-filter eml-js-term" type="text" name="eml-s" value="" placeholder="Search terms" />';
+		$output .= '<li><input class="eml-js-filter eml-js-term" type="text" name="eml-s" value="" placeholder="'.__("Search terms","wp-attachment-filter").'" />';
 		$output .= '</ul>';
 		
 		//submit button
 		$output .= '<div class="col-md-2 pull-right">';
-		$output .= '<input class="btn btn-submit" type="submit" name="eml-submit" value="Search" />';
+		$output .= '<input class="btn btn-submit" type="submit" name="eml-submit" value="'.__('Search', 'wp-attachment-filter').'" />';
 		$output .= '</div>';
 
 		$output .= '</div></div>';
@@ -625,7 +640,7 @@ class Wp_Attachment_Filter_Public {
 		// wp query args
 		$args = array(
 			'post_type' => 'attachment',
-			'post_status' => 'inherit',
+			'post_status' => 'inherit',//for attachment post type
 			'orderby' => $orderby,
 			'order' => $order,
 			'tax_query' => $default_term_filtering,
@@ -808,16 +823,15 @@ class Wp_Attachment_Filter_Public {
 						$uses_data = $media_uses;
 					}
 
-					$output .=  'Utilisation : '.$uses_data.' <br />' ;
+					$output .=  __("Use","wp-attachment-filter").': '.$uses_data.' <br />' ;
 				endif;
 				if(!empty($description)){
-					$output .=  '<a href="#eml-s'.$attachmentID.'" class="mpf-inline">Description</a> <br />' ;
+					$output .=  '<a href="#eml-s'.$attachmentID.'" class="mpf-inline">'.__('Description','wp-attachment-filter').'</a> <br />' ;
 					$output .=  '<div class="white-popup mfp-hide" id="eml-s'.$attachmentID.'">'.$description.'</div>' ;
 				}
 				//FOTOLIA
 				if(get_field('fotolia')):
-					//var_dump(get_fotolia_media($fotolia_id));
-					//$output .=  'Utilisation : '.get_field('utilisation').' <br />' ;
+
 				endif;
 
 				$output .= "</div>";
@@ -849,7 +863,7 @@ class Wp_Attachment_Filter_Public {
 			$output .= '</div>';
 		} else {
 			// no attachments found
-			$output = "<span class='eml-no-result'>no attachment found</span>";
+			$output = '<span class="eml-no-result">'.__("No attachment found", "wp-attachment-filter").'</span>';
 		}
 		wp_reset_postdata();
 
@@ -887,7 +901,8 @@ class Wp_Attachment_Filter_Public {
 			//query args
 			$query_images_args = array(
 				'post_type' => 'attachment',
-				'post_status' => 'inherit',
+				'update_post_term_cache' => false, // don't retrieve post terms
+				'post_status' => 'inherit',//for attachment post type
 				'posts_per_page' => $this->NumberOfPosts,
 				'paged' => $paged,
 				'orderby' => 'date',
@@ -900,7 +915,8 @@ class Wp_Attachment_Filter_Public {
 			// no term from shortcode - build a general query without tax parameter
 			$query_images_args = array(
 				'post_type' => 'attachment',
-				'post_status' => 'inherit',
+				'update_post_term_cache' => false, // don't retrieve post terms
+				'post_status' => 'inherit',//for attachment post type
 				'posts_per_page' => $this->NumberOfPosts,
 				'paged' => $paged,
 				'orderby' => 'date',
@@ -1026,7 +1042,7 @@ class Wp_Attachment_Filter_Public {
 			$output = '';
 
 			$args = array(
-				'show_option_all'    => __('All', 'wafp'),
+				'show_option_all'    => __('All', 'wp-attachment-filter'),
 				'show_option_none'   => '',
 				'option_none_value'  => '-1',
 				'orderby'            => 'ID',

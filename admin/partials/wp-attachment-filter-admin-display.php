@@ -33,9 +33,10 @@
                     //get data from options
                     $acf_wpaf_items_option = get_option('wpaf-acf-items');
                     //list available custom fields for attachment type
-                    $acf_wpaf_items = $wpafp->get_attachment_custom(false);
+                    $acf_wpaf_items = $wpafp->get_attachment_custom_fields(false);
                     //var_dump($acf_wpaf_items_option);
                     echo '<ul>';
+                    //var_dump($acf_wpaf_items);
                     if($acf_wpaf_items){
                         foreach($acf_wpaf_items as $acf_wpaf_item){
                             if(is_array($acf_wpaf_items_option)){

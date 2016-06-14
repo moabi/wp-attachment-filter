@@ -16,7 +16,7 @@
  * Plugin Name:       wp Attachment filter
  * Plugin URI:        https://payzen.eu
  * Description:       Display medias by taxonomy, filter them
- * Version:           1.2
+ * Version:           1.2.1
  * Author:            LYRA NETWORK
  * Author URI:        https://www.lyra-network.com
  * License:           GPL-2.0+
@@ -38,6 +38,16 @@ function get_wp_attachment_filter_plugin_dir(){
 function get_wp_attachment_filter_plugin_uri(){
 	$url_plugins = plugin_dir_url(__FILE__);
 	return $url_plugins;
+}
+
+add_action( 'plugins_loaded', 'wp_attachment_filter_load_textdomain' );
+/**
+ * Load plugin textdomain.
+ *
+ * @since 1.0.0
+ */
+function wp_attachment_filter_load_textdomain() {
+	load_plugin_textdomain( 'wp-attachment-filter', false, plugin_basename( dirname( __FILE__ ) ) . '/languages' );
 }
 
 /**
@@ -83,3 +93,6 @@ function run_wp_attachment_filter() {
 
 }
 run_wp_attachment_filter();
+
+
+
