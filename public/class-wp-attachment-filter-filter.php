@@ -162,9 +162,13 @@ class Wp_Attachment_Filter_Filter {
 	 */
 
 	public function get_extra_filter($wp_query,$default_term = false){
-		//var_dump($default_term);
-		$wpaf_cache = new Wp_Attachment_Filter_Cache('wp-attachment-filter','v1.0');
 
+		$wpaf_cache = new Wp_Attachment_Filter_Cache('wp-attachment-filter','v1.0');
+		if($default_term == "0"){
+			$default_term = 1;
+			//var_dump($default_term);
+			//exit;
+		}
 		//check if file exist in the cache
 		if($wpaf_cache->get($default_term) == false){
 

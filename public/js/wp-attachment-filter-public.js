@@ -239,7 +239,7 @@ function resfreshMediaFilter(wrapper,mediaTax,$ajaxurl){
 		.done(function(data) {
 
 			var obj = jQuery.parseJSON( data );
-			console.log(obj);
+			//console.log(obj);
 			//replace mime type
 			$('.eml-mime-type').replaceWith(obj.mime);
 			//iterate through custom fields
