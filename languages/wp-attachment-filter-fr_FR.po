@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: wp-attachment-filter\n"
 "Report-Msgid-Bugs-To: https://payzen.eu\n"
-"POT-Creation-Date: 2016-06-14 14:30+0200\n"
-"PO-Revision-Date: 2016-06-14 14:32+0200\n"
+"POT-Creation-Date: 2016-06-16 15:06+0200\n"
+"PO-Revision-Date: 2016-06-16 15:08+0200\n"
 "Last-Translator: LYRA NETWORK <support@payzen.eu>\n"
 "Language-Team: David Fieffe <support@payzen.eu>\n"
 "Language: fr_FR\n"
@@ -24,6 +24,43 @@ msgstr ""
 "X-Poedit-SearchPathExcluded-2: public/img\n"
 "X-Poedit-SearchPathExcluded-3: public/css\n"
 "X-Poedit-SearchPathExcluded-4: public/libs\n"
+
+#: public/class-wp-attachment-filter-filter.php:126
+msgid "Name"
+msgstr "Nom"
+
+#: public/class-wp-attachment-filter-filter.php:127
+msgid "Date"
+msgstr "Date"
+
+#: public/class-wp-attachment-filter-filter.php:132
+msgid "Asc"
+msgstr "Asc"
+
+#: public/class-wp-attachment-filter-filter.php:133
+msgid "Desc"
+msgstr "Desc"
+
+#: public/class-wp-attachment-filter-filter.php:138
+msgid "Search terms"
+msgstr "Titre"
+
+#: public/class-wp-attachment-filter-filter.php:143
+msgid "Search"
+msgstr "Recherche"
+
+#: public/class-wp-attachment-filter-filter.php:287
+msgid " Document type"
+msgstr "Type de document"
+
+#: public/class-wp-attachment-filter-filter.php:297
+msgid "No mime type"
+msgstr ""
+
+#: public/class-wp-attachment-filter-filter.php:334
+#: public/class-wp-attachment-filter-filter.php:337
+msgid "No filter available"
+msgstr "Pas de filtre disponible"
 
 #: public/class-wp-attachment-filter-public.php:119
 msgctxt "Taxonomy General Name"
@@ -107,71 +144,51 @@ msgstr ""
 msgid "Items list navigation"
 msgstr ""
 
-#: public/class-wp-attachment-filter-public.php:352
-msgid " Document type"
-msgstr "Type de document"
-
-#: public/class-wp-attachment-filter-public.php:515
-msgid "Name"
-msgstr "Nom"
-
-#: public/class-wp-attachment-filter-public.php:516
-msgid "Date"
-msgstr "Date"
-
-#: public/class-wp-attachment-filter-public.php:521
-msgid "Asc"
-msgstr "Asc"
-
-#: public/class-wp-attachment-filter-public.php:522
-msgid "Desc"
-msgstr "Desc"
-
-#: public/class-wp-attachment-filter-public.php:527
-msgid "Search terms"
-msgstr "Titre"
-
-#: public/class-wp-attachment-filter-public.php:532
-msgid "Search"
-msgstr "Recherche"
-
-#: public/class-wp-attachment-filter-public.php:679
+#: public/class-wp-attachment-filter-public.php:400
 msgid "Results"
 msgstr "Résultats"
 
-#: public/class-wp-attachment-filter-public.php:771
+#: public/class-wp-attachment-filter-public.php:491
 msgid "Close"
 msgstr "Fermer"
 
-#: public/class-wp-attachment-filter-public.php:771
+#: public/class-wp-attachment-filter-public.php:491
 msgid "Next"
 msgstr "Suivant"
 
-#: public/class-wp-attachment-filter-public.php:771
+#: public/class-wp-attachment-filter-public.php:491
 msgid "Previous"
 msgstr "Précédent"
 
-#: public/class-wp-attachment-filter-public.php:813
+#: public/class-wp-attachment-filter-public.php:533
 msgid "Use"
 msgstr "Utilisation"
 
-#: public/class-wp-attachment-filter-public.php:832
+#: public/class-wp-attachment-filter-public.php:536
+msgid "Description"
+msgstr "Description"
+
+#: public/class-wp-attachment-filter-public.php:547
 msgid "READ"
 msgstr "LIRE"
 
-#: public/class-wp-attachment-filter-public.php:835
+#: public/class-wp-attachment-filter-public.php:550
 msgid "download"
 msgstr "Télécharger"
 
-#: public/class-wp-attachment-filter-public.php:972
+#: public/class-wp-attachment-filter-public.php:566
+msgid "No attachment found"
+msgstr "Aucun résultat"
+
+#: public/class-wp-attachment-filter-public.php:684
 msgid "&laquo;"
 msgstr "&laquo;"
 
-#: public/class-wp-attachment-filter-public.php:973
+#: public/class-wp-attachment-filter-public.php:685
 msgid "&raquo;"
 msgstr ""
 
-#: public/class-wp-attachment-filter-public.php:1033
+#: public/class-wp-attachment-filter-public.php:745
 msgid "All"
 msgstr "Tous"
 

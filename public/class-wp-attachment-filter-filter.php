@@ -164,10 +164,9 @@ class Wp_Attachment_Filter_Filter {
 	public function get_extra_filter($wp_query,$default_term = false){
 
 		$wpaf_cache = new Wp_Attachment_Filter_Cache('wp-attachment-filter','v1.0');
+		//default "All" option value should be 1 instead of 0
 		if($default_term == "0"){
 			$default_term = 1;
-			//var_dump($default_term);
-			//exit;
 		}
 		//check if file exist in the cache
 		if($wpaf_cache->get($default_term) == false){
@@ -332,10 +331,10 @@ class Wp_Attachment_Filter_Filter {
 						$output .= $custom_field_value != "" ? '<li><input class="eml-js-filter" name="eml-'.$custom_field.'" type="checkbox" value="'.$custom_field_value.'" id="'.$custom_field_value.'" /><label for="'.$custom_field_value.'"> '.$custom_field_value.'</label></li>': '';
 					}
 				}
-				$output .= ($i == 0) ? __("No choice in this category","wp-attachment-filter"): '';
+				$output .= ($i == 0) ? __("No filter available","wp-attachment-filter"): '';
 
 			} else {
-				$output .= __("No choice","wp-attachment-filter");
+				$output .= __("No filter available","wp-attachment-filter");
 			}
 			$output .= '</ul></li></ul></div>';
 			$output .= '</div>';
