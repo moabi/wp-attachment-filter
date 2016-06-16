@@ -68,7 +68,7 @@ class Wp_Attachment_Filter_Filter {
 		$query_args = array(
 			'post_type' => 'attachment',
 			'post_status' => 'inherit',//for attachment post type
-			'posts_per_page' => 1000,
+			'posts_per_page' => 10000,
 			'fields '	=> 'ids',
 			'cache_results'  => false,
 		);
@@ -98,10 +98,13 @@ class Wp_Attachment_Filter_Filter {
 		$output .= '<h2><img src="'.get_wp_attachment_filter_plugin_uri().'/public/img/filter-outline.svg" class="filter"/>Filter <img src="'.get_wp_attachment_filter_plugin_uri().'/public/img/reload.svg" class="fa-spin js-spin-it"  style="display: none;" /></h2>';
 
 
-
-		//TEST PURPOSE replace with $eml_default_query
-		$test_query = $this->get_all_attachment_ids();
-		$extra_expensive_fields = $this->get_extra_filter($test_query);
+		/**
+		 * at init query is general & takes every attachment ids
+		 * we use $ids_query to make the optimize the query
+		 * if initial query change's for some reason, adapt $ids_query...
+		 */
+		$ids_query = $this->get_all_attachment_ids();
+		$extra_expensive_fields = $this->get_extra_filter($ids_query,$default_term);
 		//var_dump($extra_expensive_fields);
 		$output .= $extra_expensive_fields['mime'];
 		$output .= $extra_expensive_fields['acf'];
@@ -154,11 +157,16 @@ class Wp_Attachment_Filter_Filter {
 	 * get_extra_filter
 	 * loop through the queried post to fetch available custom fields && mime type
 	 * @param $wp_query
-	 *
+	 * @param $default_term
 	 * @return string
 	 */
 
-	public function get_extra_filter($wp_query){
+	public function get_extra_filter($wp_query,$default_term = false){
+		//var_dump($default_term);
+		$wpaf_cache = new Wp_Attachment_Filter_Cache('wp-attachment-filter','v1.0');
+
+		//check if file exist in the cache
+		if($wpaf_cache->get($default_term) == false){
 
 		$acf_wpaf_items_option = get_option('wpaf-acf-items');
 
@@ -238,6 +246,18 @@ class Wp_Attachment_Filter_Filter {
 		//Custom fields
 		$data['acf'] = $this->get_acf_media_by_tax($custom_fields);
 		//var_dump($data['acf']);
+
+		//create the Cached file
+		$wpaf_cache->set($default_term, $data);
+
+		} else {
+			//file does exist, rely on cache
+			$data_file = $wpaf_cache->get($default_term);
+			$data = json_decode(json_encode($data_file), True);
+			//var_dump($data);
+		}
+
+
 		return $data;
 
 

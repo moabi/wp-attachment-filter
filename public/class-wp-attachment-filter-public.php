@@ -248,23 +248,8 @@ class Wp_Attachment_Filter_Public {
 		$post_tax = (isset($_POST['value'])) ? $_POST['value'] : '';
 
 		$wp_query = $this->eml_default_query($post_tax);
-
-		/*
-		$mime = $filter_waf->get_mime_type_by_tax($wp_query);
-
-		$acf = array();
-		$acf_wpaf_items_option = get_option('wpaf-acf-items');
-		foreach($acf_wpaf_items_option as $acf_wpaf_item){
-			$acf_data = $filter_waf->get_acf_media_by_tax($acf_wpaf_item);
-			array_push($acf,$acf_data);
-		}
-
-		$data = array(
-			'mime' => $mime,
-			'acf'   => $acf,
-		);
-		*/
-		$data = $filter_waf->get_extra_filter($wp_query);
+		
+		$data = $filter_waf->get_extra_filter($wp_query,$post_tax);
 		
 		$json_data = json_encode($data);
 

@@ -3,3 +3,4 @@ readme.txt
 composer.lock
 node_modules
 vendor
+public/cache/*

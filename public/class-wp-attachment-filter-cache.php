@@ -24,6 +24,9 @@
 
 class Wp_Attachment_Filter_Cache {
 
+	public $timeout = 10000;
+
+
 	/**
 	 * The ID of this plugin.
 	 *
@@ -57,4 +60,46 @@ class Wp_Attachment_Filter_Cache {
 	}
 
 
+	/**
+	 * Get cache file.
+	 * @param $file
+	 * @return array|mixed|null|object
+	 */
+	public function get($type) {
+		$file = get_wp_attachment_filter_plugin_dir() .'public/cache/'. $type.'.json';
+
+		$file_age = filemtime($file) + $this->timeout;
+
+		$file_timed_out = intval($file_age - time());
+		//check if file exist and is still valid
+		if (file_exists($file) && $file_timed_out > 0) {
+			$content = json_decode(file_get_contents($file));
+			return $content;
+
+		} else {
+			return false;
+		}
+	}
+	/**
+	 * Set cache file.
+	 * create static file
+	 * @param $file string name of the file
+	 * @param $content string content of the file
+	 */
+	public function set($file, $content) {
+		@file_put_contents(get_wp_attachment_filter_plugin_dir() .'public/cache/'. $file.'.json', json_encode($content));
+	}
+
+	/**
+	 * clear
+	 * delete all files
+	 */
+	public function clear() {
+		$files = glob(get_wp_attachment_filter_plugin_dir() .'public/cache/*.json');
+		foreach ($files as $file) {
+			if (is_file($file)) {
+				@unlink($file);
+			}
+		}
+	}
 }
