@@ -142,6 +142,66 @@ class WpAttachmentFilterUtilities
         return $imagick->writeImage($destination);
     }
 
+
+    /**
+     * get_icon_for_attachment
+     * add icon to files by mime type
+     * @param $post_id
+     * @return string
+     */
+    public function get_icon_for_attachment($post_id) {
+
+        $type = get_post_mime_type($post_id);
+
+        switch ($type) {
+            case 'image/jpeg':
+            case 'image/png':
+            case 'image/gif':
+                return '<img class="ico" src="'.get_wp_attachment_filter_plugin_uri().'/public/img/picture.svg"/>';
+                break;
+            case 'image/x-icon':
+                return '<img class="ico" src="'.get_wp_attachment_filter_plugin_uri().'/public/img/ico.svg"/>';
+                break;
+            case 'video/mpeg':
+            case 'video/mp4':
+            case 'video/quicktime':
+                return '<img class="ico" src="'.get_wp_attachment_filter_plugin_uri().'/public/img/video-camera.svg"/>';
+                break;
+            case 'image/vnd.adobe.photoshop':
+            case 'image/vnd.adobe.illustrator':
+                return '<img class="ico" src="'.get_wp_attachment_filter_plugin_uri().'/public/img/ppt.svg"/>';
+                break;
+            case 'application/pdf':
+                return '<img class="ico" src="'.get_wp_attachment_filter_plugin_uri().'/public/img/pdf-file-format-symbol.svg"/>';
+                break;
+            case 'application/powerpoint':
+            case 'application/mspowerpoint':
+            case 'application/x-mspowerpoint':
+            case 'application/vnd.ms-powerpoint':
+                return '<img class="ico" src="'.get_wp_attachment_filter_plugin_uri().'/public/img/ppt.svg"/>';
+                break;
+            case 'application/msword':
+                return '<img class="ico" src="'.get_wp_attachment_filter_plugin_uri().'/public/img/word.svg"/>';
+                break;
+            case 'application/excel':
+            case 'application/x-excel':
+                return '<img class="ico" src="'.get_wp_attachment_filter_plugin_uri().'/public/img/excel.svg"/>';
+                break;
+            case 'application/zip':
+            case 'application/x-compressed':
+                return '<img class="ico" src="'.get_wp_attachment_filter_plugin_uri().'/public/img/zip.svg"/>';
+                break;
+            case 'text/csv':
+            case 'text/plain':
+            case 'text/xml':
+                return '<img class="ico" src="'.get_wp_attachment_filter_plugin_uri().'/public/img/text-document.svg"/>';
+                break;
+            default:
+                return '<img class="ico" src="'.get_wp_attachment_filter_plugin_uri().'/public/img/ppt.svg"/>';
+        }
+    }
+    
+    
     /**
      * get_ext
      * detect uploaded file type
@@ -217,7 +277,6 @@ class WpAttachmentFilterUtilities
             'gif'	=>	'image/gif',
             'jpeg'	=>	array('image/jpeg', 'image/pjpeg'),
             'jpg'	=>	array('image/jpeg', 'image/pjpeg'),
-            'jpe'	=>	array('image/jpeg', 'image/pjpeg'),
             'jp2'	=>	array('image/jp2', 'video/mj2', 'image/jpx', 'image/jpm'),
             'j2k'	=>	array('image/jp2', 'video/mj2', 'image/jpx', 'image/jpm'),
             'jpf'	=>	array('image/jp2', 'video/mj2', 'image/jpx', 'image/jpm'),
@@ -253,6 +312,7 @@ class WpAttachmentFilterUtilities
             'dotx'	=>	array('application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/zip', 'application/msword'),
             'xlsx'	=>	array('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/zip', 'application/vnd.ms-excel', 'application/msword', 'application/x-zip'),
             'word'	=>	array('application/msword', 'application/octet-stream'),
+            'word template' => array('application/vnd.openxmlformats-officedocument.wordprocessingml.template'),
             'xl'	=>	'application/excel',
             'eml'	=>	'message/rfc822',
             'json'  =>	array('application/json', 'text/json'),
@@ -320,7 +380,7 @@ class WpAttachmentFilterUtilities
 
         }
 
-        if( is_empty($extension_nice_name)){
+        if($extension_nice_name === ""){
             $extension_nice_name = $mime_type;
         }
 

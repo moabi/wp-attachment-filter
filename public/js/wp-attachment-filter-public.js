@@ -231,22 +231,25 @@ function resfreshMediaFilter(wrapper,mediaTax,$ajaxurl){
 	container = wrapper.attr('id');
 	$resultContainer = $('#res-'+ container );
 	$resultContainerTax = $('#'+ container ).attr('data-default-term');
-	//console.log($resultContainerTax);
+	//console.log(mediaTax);
 	var jqxhr = $.post( $ajaxurl,{
 			'action': 'refresh_eml_filters',
 			'value':   mediaTax
 		})
 		.done(function(data) {
-			var obj = jQuery.parseJSON( data );
 
+			var obj = jQuery.parseJSON( data );
+			console.log(obj);
+			//replace mime type
 			$('.eml-mime-type').replaceWith(obj.mime);
 			//iterate through custom fields
 			acfObj = obj.acf;
-			for (i = 0; i < acfObj.length; i++) {
-				el = acfObj[i];
-				elID = $(el).attr('id');
-				$('#'+elID).replaceWith(el);
-			}
+			target = $(acfObj).find('.eml-acf-field');
+			$(acfObj).each(function(index, element){
+				elID = $(element).attr('id');
+				$('#'+elID).replaceWith(element);
+			});
+
 
 		})
 		.fail(function() {
@@ -306,7 +309,7 @@ jQuery(function(){
 			);
 
 		});
-		//console.log(values);
+		console.log(values);
 		mediaFilter(container, values,$ajaxurl,offset);
 	});
 

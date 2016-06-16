@@ -3,6 +3,7 @@
     <?php
 
     $wpafp = new Wp_Attachment_Filter_Public('wp-attachment-filter-public','1.0');
+    $wpaf_filter = new Wp_Attachment_Filter_Filter('wp-attachment-filter-public','1.0');
     ?>
     <form method="post" action="options.php">
         <?php settings_fields( 'wp-attachment-filter-settings-group' ); ?>
@@ -33,7 +34,7 @@
                     //get data from options
                     $acf_wpaf_items_option = get_option('wpaf-acf-items');
                     //list available custom fields for attachment type
-                    $acf_wpaf_items = $wpafp->get_attachment_custom_fields(false);
+                    $acf_wpaf_items = $wpaf_filter->get_attachment_custom_fields(false);
                     //var_dump($acf_wpaf_items_option);
                     echo '<ul>';
                     //var_dump($acf_wpaf_items);

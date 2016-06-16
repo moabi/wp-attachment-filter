@@ -119,6 +119,7 @@ class Wp_Attachment_Filter {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-wp-attachment-filter-utilities.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-wp-attachment-filter-public.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-wp-attachment-filter-filter.php';
 
 
 		$this->loader = new Wp_Attachment_Filter_Loader();
