@@ -4,7 +4,7 @@
 
 
 /**
- * resfreshMediaFilter
+ * preloadCache
  *
  */
 function preloadCache(){
@@ -14,10 +14,7 @@ function preloadCache(){
         'action': 'preload_cache'
     })
         .done(function(data) {
-
             console.log(data);
-
-
         })
         .fail(function() {
             console.warn( "error" );
@@ -25,6 +22,7 @@ function preloadCache(){
         .always(function() {
             jQuery('.wpaf-js-loader').fadeOut();
             jQuery('.wpaf-js-loader-success').fadeIn();
+            location.hash = "#wpbody-content";
         });
 
 }
@@ -33,7 +31,6 @@ function preloadCache(){
 jQuery(function () {
 
     var $ = jQuery;
-    //console.log(ajaxurl);
     /**
      * PRELOAD THE CACHE PART
      */

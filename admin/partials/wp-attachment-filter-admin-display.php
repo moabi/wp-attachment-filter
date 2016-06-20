@@ -133,17 +133,26 @@
 <h2>Cache settings</h2>
 
     <p>
-        <ul>
         <?php
-
         $files = glob(get_wp_attachment_filter_plugin_dir().'public/cache/*.json');
-        foreach($files as $file){
-            $file_name = str_replace(get_wp_attachment_filter_plugin_dir().'public/cache/','',$file);
-            echo '<li>'.$file_name.' - ( '.date("F d Y H:i:s.", filectime($file)).' )</li>';
+        ?>
+        <?php
+        if($files){
+            foreach($files as $file){
+                $file_name = str_replace(get_wp_attachment_filter_plugin_dir().'public/cache/','',$file);
+                echo '<li>'.$file_name.' - ( '.date("F d Y H:i:s.", filectime($file)).' )</li>';
+            }
+        } else {
+            echo '<pre>';
+            _e('No files founds in the cache.');
+            echo '</pre>';
         }
         ?>
-    </ul>
+        <ol>
+        <?php
 
+        ?>
+    </ol>
     </p>
         <p>
         will create all the filters from all the taxonomies,please don't reload the page while working
