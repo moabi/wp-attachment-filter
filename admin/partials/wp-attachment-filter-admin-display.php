@@ -4,6 +4,7 @@
 
     $wpafp = new Wp_Attachment_Filter_Public('wp-attachment-filter-public','1.0');
     $wpaf_filter = new Wp_Attachment_Filter_Filter('wp-attachment-filter-public','1.0');
+    $wpaf_admin_cache = new Wp_Attachment_Filter_AdminCache('wp-attachment-filter-public','1.0');
     ?>
     <form method="post" action="options.php">
         <?php settings_fields( 'wp-attachment-filter-settings-group' ); ?>
@@ -103,14 +104,67 @@
                     <input <?php echo $checked_dim_loader; ?> type="checkbox" name="wp-attachment-filter-loading-bar" id="wp-attachment-filter-loading-bar" />
                 </td>
             </tr>
+            <tr>
+                <th scope="row">
+                    <label for="wp-attachment-filter-loading-bar">
+                       Manually preload ? (will always use, static files,cache won't expire)
+                    </label>
+                </th>
+                <td>
+                    <?php
+                    $wp_payzen_cache = get_option('wp-attachment-filter-manual-preload');
+                    if($wp_payzen_cache == 'on') {
+                        $checked_dim_cache = 'checked';
+                    } else {
+                        $checked_dim_cache = '';
+                    }
+                    ?>
+                    <input <?php echo $checked_dim_cache; ?> type="checkbox" name="wp-attachment-filter-manual-preload" id="wp-attachment-filter-manual-preload" />
+                </td>
+
+            </tr>
         </table>
 
         <?php submit_button(); ?>
 
     </form>
+    <hr>
+
+<h2>Cache settings</h2>
+
+    <p>
+        <ul>
+        <?php
+
+        $files = glob(get_wp_attachment_filter_plugin_dir().'public/cache/*.json');
+        foreach($files as $file){
+            $file_name = str_replace(get_wp_attachment_filter_plugin_dir().'public/cache/','',$file);
+            echo '<li>'.$file_name.' - ( '.date("F d Y H:i:s.", filectime($file)).' )</li>';
+        }
+        ?>
+    </ul>
+
+    </p>
+        <p>
+        will create all the filters from all the taxonomies,please don't reload the page while working
+        </p>
+        <?php
+        /**
+         * Call $wpaf_admin_cache->create_cached_filters();
+         */
+        submit_button('Preload the cache','primary','wpaf-js-cache-preloader');
+        ?>
+    <span class="wpaf-js-loader" style="display: none;"><img src="<?php
+echo get_bloginfo('url'); ?>/wp-admin/images/loading.gif" /></span>
+
+    <div class="notice-success updated success wpaf-js-loader-success" style="display:none;">
+        <p>Success ! Cache files created</p>
+    </div>
 
 
 
+    <hr>
+    
 <h2>Help</h2>
     <p>
         a tinymce button should help you to load the shortcodes <br>

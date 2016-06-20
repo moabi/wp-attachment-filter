@@ -89,7 +89,7 @@ class Wp_Attachment_Filter_Filter {
 	 * @param $uuid string unique CSS ID to js target
 	 * @return string
 	 */
-	public function eml_media_filters($default_term,$uuid){
+	public function eml_media_filters($default_term, $uuid ){
 		$public_waf = new Wp_Attachment_Filter_Public('wp-attachment-filter','v1.0');
 		$eml_default_query = $public_waf->eml_default_query($default_term,true);
 
@@ -105,7 +105,6 @@ class Wp_Attachment_Filter_Filter {
 		 */
 		$ids_query = $this->get_all_attachment_ids();
 		$extra_expensive_fields = $this->get_extra_filter($ids_query,$default_term);
-		//var_dump($extra_expensive_fields);
 		$output .= $extra_expensive_fields['mime'];
 		$output .= $extra_expensive_fields['acf'];
 
@@ -153,9 +152,11 @@ class Wp_Attachment_Filter_Filter {
 	}
 
 
+
 	/**
 	 * get_extra_filter
 	 * loop through the queried post to fetch available custom fields && mime type
+	 * if no query
 	 * @param $wp_query
 	 * @param $default_term
 	 * @return string
@@ -168,90 +169,91 @@ class Wp_Attachment_Filter_Filter {
 		if($default_term == "0"){
 			$default_term = 1;
 		}
+		
 		//check if file exist in the cache
 		if($wpaf_cache->get($default_term) == false){
 
-		$acf_wpaf_items_option = get_option('wpaf-acf-items');
+			//get selected custom fields
+			$acf_wpaf_items_option = get_option('wpaf-acf-items');
 
-		$data = array();
-		$custom_fields = array();
-		$mimes = array();
+			$data = array();
+			$custom_fields = array();
+			$mimes = array();
 
-		foreach($acf_wpaf_items_option as $acf_field) {
-			$custom_fields[$acf_field] = array();
-		}
-		//loop through the query
-		if ( $wp_query->have_posts() && $wp_query ) {
-			//we should use a cache for this
-			while ($wp_query->have_posts()) {
-				$wp_query->the_post();
-				$attachmentID = get_the_ID();
-				//push mime types
-				$type = get_post_mime_type($attachmentID);
-				array_push($mimes, $type );
-				//push custom fields
-				foreach($acf_wpaf_items_option as $acf_field) {
-					$field_type = get_field($acf_field,$attachmentID);
+			foreach($acf_wpaf_items_option as $acf_field) {
+				$custom_fields[$acf_field] = array();
+			}
+			
+			//loop through the query
+			if ( $wp_query->have_posts() && $wp_query ) {
+				//we should use a cache for this
+				while ($wp_query->have_posts()) {
+					$wp_query->the_post();
+					$attachmentID = get_the_ID();
+					//push mime types
+					$type = get_post_mime_type($attachmentID);
+					array_push($mimes, $type );
+					//push custom fields
+					foreach($acf_wpaf_items_option as $acf_field) {
+						$field_type = get_field($acf_field,$attachmentID);
 
-					if (is_array($field_type)) {
-						foreach ($field_type as $type_uniq) {
-							if(!in_array($type_uniq,$custom_fields[$acf_field])){
-								$custom_fields[$acf_field][] = $type_uniq;
+						if (is_array($field_type)) {
+							foreach ($field_type as $type_uniq) {
+								if(!in_array($type_uniq,$custom_fields[$acf_field])){
+									$custom_fields[$acf_field][] = $type_uniq;
+								}
 							}
-
-						}
-					} else {
-						if( !is_null($field_type) && !in_array($field_type,$custom_fields[$acf_field])){
-							$custom_fields[$acf_field][] = $field_type;
+						} else {
+							if( !is_null($field_type) && !in_array($field_type,$custom_fields[$acf_field])){
+								$custom_fields[$acf_field][] = $field_type;
+							}
 						}
 					}
 				}
 
-			}
+			} else {
 
-		} else {
+				//if there is no post -> gather every mime types as if there is a result there should be one mime type
+				// this query should be for a "no term" query
+				$attachmentQuery = $this->get_all_attachment_ids();
+				while ($attachmentQuery->have_posts()) {
+					global $post;
+					$attachmentQuery->the_post();
+					$attachmentID = get_the_ID();
+					//push mime type
+					$type = get_post_mime_type($attachmentID);
+					array_push($mimes, $type );
+					//push custom field
+					foreach($acf_wpaf_items_option as $acf_field) {
+						$field_type = get_field($acf_field,$attachmentID);
 
-			//if there is no post -> gather every mime types as if there is a result there should be one mime type
-			// this query should be for a "no term" query
-			$attachmentQuery = $this->get_all_attachment_ids();
-			while ($attachmentQuery->have_posts()) {
-				global $post;
-				$attachmentQuery->the_post();
-				$attachmentID = get_the_ID();
-				//push mime type
-				$type = get_post_mime_type($attachmentID);
-				array_push($mimes, $type );
-				//push custom field
-				foreach($acf_wpaf_items_option as $acf_field) {
-					$field_type = get_field($acf_field,$attachmentID);
-
-					if (is_array($field_type)) {
-						foreach ($field_type as $type_uniq) {
-							if(!in_array($type_uniq,$custom_fields[$acf_field])){
-								$custom_fields[$acf_field][] = $type_uniq;
+						if (is_array($field_type)) {
+							foreach ($field_type as $type_uniq) {
+								if(!in_array($type_uniq,$custom_fields[$acf_field])){
+									$custom_fields[$acf_field][] = $type_uniq;
+								}
 							}
-						}
-					} else {
-						if( !is_null($field_type) && !in_array($field_type,$custom_fields[$acf_field])){
-							$custom_fields[$acf_field][] = $field_type;
+						} else {
+							if( !is_null($field_type) && !in_array($field_type,$custom_fields[$acf_field])){
+								$custom_fields[$acf_field][] = $field_type;
+							}
 						}
 					}
 				}
 			}
-		}
 
-		//uniq terms please
-		$uniq_terms_mimes = array_unique($mimes);
+			//uniq terms please
+			$uniq_terms_mimes = array_unique($mimes);
 
 
-		//MIME TYPE OPERATION
-		$data['mime'] = $this->get_mime_type_by_tax($uniq_terms_mimes);
-		//Custom fields
-		$data['acf'] = $this->get_acf_media_by_tax($custom_fields);
-		//var_dump($data['acf']);
+			//MIME TYPE OPERATION
+			$data['mime'] = $this->get_mime_type_by_tax($uniq_terms_mimes);
+			//Custom fields
+			$data['acf'] = $this->get_acf_media_by_tax($custom_fields);
+			//var_dump($data['acf']);
 
-		//create the Cached file
-		$wpaf_cache->set($default_term, $data);
+			//create the Cached file
+			$wpaf_cache->set($default_term, $data);
 
 		} else {
 			//file does exist, rely on cache

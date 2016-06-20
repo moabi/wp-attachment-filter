@@ -24,7 +24,7 @@
 
 class Wp_Attachment_Filter_Cache {
 
-	public $timeout = 10000;
+	public $timeout = 100000;
 
 
 	/**
@@ -62,17 +62,23 @@ class Wp_Attachment_Filter_Cache {
 
 	/**
 	 * Get cache file.
+	 * $wp_payzen_cache == 'on' means we will rely on cacheds files, however old they are
 	 * @param $file
 	 * @return array|mixed|null|object
 	 */
 	public function get($type) {
+		$wp_payzen_cache = get_option('wp-attachment-filter-manual-preload');
+
+		//get file time
 		$file = get_wp_attachment_filter_plugin_dir() .'public/cache/'. $type.'.json';
-
 		$file_age = filemtime($file) + $this->timeout;
-
 		$file_timed_out = intval($file_age - time());
+
+		$is_time_ok = ($file_timed_out > 0) ? true : false;
+		$rely_on_cache = ($wp_payzen_cache == 'on') ? true : $is_time_ok;
+
 		//check if file exist and is still valid
-		if (file_exists($file) && $file_timed_out > 0) {
+		if (file_exists($file) && $rely_on_cache) {
 			$content = json_decode(file_get_contents($file));
 			return $content;
 

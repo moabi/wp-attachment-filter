@@ -112,6 +112,8 @@ class Wp_Attachment_Filter {
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wp-attachment-filter-admin.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wp-attachment-filter-cahe.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wp-attachment-filter-bulkedit.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
@@ -153,6 +155,7 @@ class Wp_Attachment_Filter {
 	private function define_admin_hooks() {
 		global $user_ID;
 		$plugin_admin = new Wp_Attachment_Filter_Admin( $this->get_plugin_name(), $this->get_version() );
+		$plugin_admin_cache = new Wp_Attachment_Filter_AdminCache( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
@@ -164,6 +167,8 @@ class Wp_Attachment_Filter {
 			$this->loader->add_filter('mce_buttons',$plugin_admin, 'mediabycategory_add_tinymce_button');
 		//}
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'wp_admin_menu' );
+
+		$this->loader->add_action( 'wp_ajax_preload_cache',$plugin_admin_cache, 'preload_cache' );
 
 
 	}

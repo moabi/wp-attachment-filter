@@ -74,7 +74,7 @@ class Wp_Attachment_Filter_Admin {
 	public function enqueue_scripts() {
 
 
-		//wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wp-attachment-filter-admin.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wpaf-cache.js', array( 'jquery' ), $this->version, false );
 
 	}
 
@@ -132,6 +132,7 @@ class Wp_Attachment_Filter_Admin {
 		register_setting( 'wp-attachment-filter-settings-group', 'wpaf-acf-items' );
 		register_setting( 'wp-attachment-filter-settings-group', 'wp-attachment-filter-mpf' );
 		register_setting( 'wp-attachment-filter-settings-group', 'wp-attachment-filter-loading-bar' );
+		register_setting( 'wp-attachment-filter-settings-group', 'wp-attachment-filter-manual-preload' );
 	}
 
 }

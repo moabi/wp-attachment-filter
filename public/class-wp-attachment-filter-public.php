@@ -396,7 +396,7 @@ class Wp_Attachment_Filter_Public {
 		$output = '';
 		if ( $query_images->have_posts() ) {
 			if($query_args['is_search'] == true){
-				$count = $query_images->post_count;
+				//$count = $query_images->post_count;
 				$output .= '<div class="row"><div class="col-md-12"><h2 class="eml-results"> '.__('Results','wp-attachment-filter').' ('.$total_found_posts.'):';
 				if($total_found_posts > $this->NumberOfPosts){
 					$offsetN = $query_args['args']['offset'];
@@ -432,7 +432,7 @@ class Wp_Attachment_Filter_Public {
 				$attach = wp_get_attachment_metadata($attachmentID);
 				$attachment_url = wp_get_attachment_url( $attachmentID );
 				$filetype = wp_check_filetype($attachment_url);
-				$attachment_page = get_attachment_link($attachmentID);
+				//$attachment_page = get_attachment_link($attachmentID);
 				$comments_count = get_comments_number( $attachmentID );
 				$filename_only = basename( get_attached_file( $attachmentID ) );
 				$fullsize_path = get_attached_file( $attachmentID ); // Full path
@@ -740,7 +740,6 @@ class Wp_Attachment_Filter_Public {
 		$get_media_tax = get_option('wpaf-media-tax');
 		if(!empty($get_media_tax)){
 			$output = '';
-
 			$args = array(
 				'show_option_all'    => __('All', 'wp-attachment-filter'),
 				'show_option_none'   => '',

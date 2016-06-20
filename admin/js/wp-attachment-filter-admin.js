@@ -4,10 +4,13 @@ var mediaCatBtn = '<div style="display:none !important;"> <form id="btn-ear-medi
 
 jQuery(document).ready(function(jQuery) {
 	var $ = jQuery;
+
+	
+    /**
+     * TINYMCE PART
+	 */
 	if(typeof tinymce != 'undefined'){
-
-
-		console.log(i);
+		//console.log(i);
 	jQuery.post(
 		ajaxurl,
 		{
